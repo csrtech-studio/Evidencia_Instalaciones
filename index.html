@@ -21,26 +21,38 @@
 
                 <label for="technician">Técnico:</label>
                 <select id="technician" name="technician" required>
-                    <option value="Juan Pérez">Juan Pérez</option>
-                    <option value="Ana López">Ana López</option>
-                    <option value="Carlos Díaz">Carlos Díaz</option>
-                    <option value="María Torres">María Torres</option>
+                    <option value="Israel Donato">Israel Donato</option>
+                    <option value="Juan Limas">Juan Limas</option>
+                    <option value="Ruben Limas">Ruben Limas</option>
+                    <option value="Edgar valdez">Edgar valdez</option>
+                    <option value="William Plata">William Plata</option>
                 </select>
 
                 <label for="company">Empresa:</label>
                 <input type="text" id="company" name="company" required>
 
+                <!-- Tipo de Instalación (Activo como campo de texto) -->
+                <label for="installationType">Activo</label>
+                <input type="text" id="installationType" name="installationType" placeholder="Activo" required>
+
+                <!-- Otros tipos de instalación como ComboBox -->
+                <label for="installationCategory">Categoría:</label>
+                <select id="installationCategory" name="installationCategory" required>
+                    <option value="Instalación">Instalación</option>
+                    <option value="Cambio">Cambio</option>
+                    <option value="Reinstalación">Reinstalación</option>
+                </select>
+
                 <div class="video-upload">
-                  <h3>Videos</h3>
-      
-                  <!-- Video Instalación -->
-                  <label for="installationVideo">Video Instalación:</label>
-                  <input type="file" id="installationVideo" accept="video/*" capture="camera" required>
-      
-                  <!-- Video TDS -->
-                  <label for="tdsVideo">Video TDS:</label>
-                  <input type="file" id="tdsVideo" accept="video/*" capture="camera" required>
-              </div>
+                    <h3>Videos</h3>
+                    <!-- Video Instalación -->
+                    <label for="installationVideo">Video Instalación:</label>
+                    <input type="file" id="installationVideo" accept="video/*" capture="camera" required>
+
+                    <!-- Video TDS -->
+                    <label for="tdsVideo">Video TDS:</label>
+                    <input type="file" id="tdsVideo" accept="video/*" capture="camera" required>
+                </div>
 
                 <button type="button" id="submitBtn">Guardar</button>
             </form>
@@ -50,12 +62,18 @@
         <section id="filters-section">
             <h2>Filtros</h2>
             <div>
-              <input type="text" id="searchCompany" placeholder="Buscar por Empresa">
-              <input type="date" id="searchDate">
-              <input type="text" id="searchTechnician" placeholder="Buscar por Técnico">
-              <button id="clearFilter">Borrar Filtro</button>
-          </div>
-            </form>
+                <input type="text" id="searchCompany" placeholder="Buscar por Empresa">
+                <input type="date" id="searchDate">
+                <input type="text" id="searchTechnician" placeholder="Buscar por Técnico">
+                <input type="text" id="searchInstallationType" placeholder="Buscar por Activo">
+                <select id="searchCategory">
+                    <option value="">Buscar por Categoría</option>
+                    <option value="Instalación">Instalación</option>
+                    <option value="Cambio">Cambio</option>
+                    <option value="Reinstalación">Reinstalación</option>
+                </select>
+                <button id="clearFilter">Borrar Filtro</button>
+            </div>
         </section>
 
         <!-- Sección de la tabla -->
@@ -67,6 +85,8 @@
                         <th>Fecha</th>
                         <th>Instalador</th>
                         <th>Empresa</th>
+                        <th>Activo</th>
+                        <th>Categoría</th>
                         <th>Video Instalación</th>
                         <th>Video TDS</th>
                     </tr>

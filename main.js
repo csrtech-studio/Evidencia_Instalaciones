@@ -23,11 +23,13 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         const date = document.getElementById("date").value;
         const technician = document.getElementById("technician").value;
         const company = document.getElementById("company").value;
+        const installationType = document.getElementById("installationType").value; // Obtener el valor de "Activo"
+        const installationCategory = document.getElementById("installationCategory").value; // Obtener el valor de "Categoría"
         const installationVideo = document.getElementById("installationVideo").files[0];
         const tdsVideo = document.getElementById("tdsVideo").files[0];
 
         // Validar campos
-        if (!date || !technician || !company || !installationVideo || !tdsVideo) {
+        if (!date || !technician || !company || !installationType || !installationCategory || !installationVideo || !tdsVideo) {
             alert("Por favor, completa todos los campos.");
             submitButton.disabled = false; // Volver a habilitar el botón si hay un error
             return;
@@ -57,6 +59,8 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
             company,
             installationVideo: installationVideoURL,
             tdsVideo: tdsVideoURL,
+            installationType, // Guardar "Activo"
+            installationCategory, // Guardar "Categoría"
         };
 
         await push(ref(db, "installations"), newEntry);
@@ -91,6 +95,8 @@ function loadInstallations(queryRef = ref(db, "installations")) {
                         <td>${data.date}</td>
                         <td>${data.technician}</td>
                         <td>${data.company}</td>
+                        <td>${data.installationType}</td> <!-- Activo -->
+                        <td>${data.installationCategory}</td> <!-- Categoría -->
                         <td><a href="${data.installationVideo}" target="_blank">Ver Video Instalación</a></td>
                         <td><a href="${data.tdsVideo}" target="_blank">Ver Video TDS</a></td>
                     </tr>
@@ -98,7 +104,7 @@ function loadInstallations(queryRef = ref(db, "installations")) {
             });
             tableBody.innerHTML = rows;
         } else {
-            tableBody.innerHTML = "<tr><td colspan='5'>No hay registros disponibles.</td></tr>";
+            tableBody.innerHTML = "<tr><td colspan='7'>No hay registros disponibles.</td></tr>";
         }
     });
 }
@@ -108,20 +114,26 @@ function clearForm() {
     document.getElementById("company").value = "";
     document.getElementById("installationVideo").value = "";
     document.getElementById("tdsVideo").value = "";
-    document.getElementById("technician").value = "Juan Pérez"; // O el valor predeterminado que desees
+    document.getElementById("technician").value = "Instalador1"; // O el valor predeterminado que desees
     document.getElementById("date").value = new Date().toISOString().split("T")[0]; // Fecha actual por defecto
+    document.getElementById("installationType").value = ""; // Limpiar "Activo"
+    document.getElementById("installationCategory").value = ""; // Limpiar "Categoría"
 }
 
 // Filtro de búsqueda
 document.getElementById("searchCompany").addEventListener("input", filterInstallations);
 document.getElementById("searchDate").addEventListener("input", filterInstallations);
 document.getElementById("searchTechnician").addEventListener("input", filterInstallations);
+document.getElementById("searchInstallationType").addEventListener("input", filterInstallations);
+document.getElementById("searchInstallationCategory").addEventListener("change", filterInstallations);
 
 // Función para aplicar el filtro
 function filterInstallations() {
     const companyFilter = document.getElementById("searchCompany").value.toLowerCase();
     const dateFilter = document.getElementById("searchDate").value;
     const technicianFilter = document.getElementById("searchTechnician").value.toLowerCase();
+    const installationTypeFilter = document.getElementById("searchInstallationType").value.toLowerCase();
+    const installationCategoryFilter = document.getElementById("searchInstallationCategory").value;
 
     const queryRef = ref(db, "installations");
     onValue(queryRef, (snapshot) => {
@@ -132,17 +144,22 @@ function filterInstallations() {
             let rows = "";
             snapshot.forEach((child) => {
                 const data = child.val();
+
                 // Filtrar según los valores introducidos
                 const matchesCompany = data.company.toLowerCase().includes(companyFilter);
                 const matchesDate = dateFilter ? data.date === dateFilter : true;
                 const matchesTechnician = data.technician.toLowerCase().includes(technicianFilter);
+                const matchesInstallationType = data.installationType.toLowerCase().includes(installationTypeFilter);
+                const matchesInstallationCategory = data.installationCategory === installationCategoryFilter || installationCategoryFilter === "";
 
-                if (matchesCompany && matchesDate && matchesTechnician) {
+                if (matchesCompany && matchesDate && matchesTechnician && matchesInstallationType && matchesInstallationCategory) {
                     rows += `
                         <tr>
                             <td>${data.date}</td>
                             <td>${data.technician}</td>
                             <td>${data.company}</td>
+                            <td>${data.installationType}</td>
+                            <td>${data.installationCategory}</td>
                             <td><a href="${data.installationVideo}" target="_blank">Ver Video Instalación</a></td>
                             <td><a href="${data.tdsVideo}" target="_blank">Ver Video TDS</a></td>
                         </tr>
@@ -151,15 +168,17 @@ function filterInstallations() {
             });
             tableBody.innerHTML = rows;
         } else {
-            tableBody.innerHTML = "<tr><td colspan='5'>No hay registros disponibles.</td></tr>";
+            tableBody.innerHTML = "<tr><td colspan='7'>No hay registros disponibles.</td></tr>";
         }
     });
 }
 
-// Borrar filtros
+// Limpiar filtros
 document.getElementById("clearFilter").addEventListener("click", () => {
     document.getElementById("searchCompany").value = "";
     document.getElementById("searchDate").value = "";
     document.getElementById("searchTechnician").value = "";
-    loadInstallations(); // Mostrar todos los registros
+    document.getElementById("searchInstallationType").value = "";
+    document.getElementById("searchInstallationCategory").value = "";
+    loadInstallations(); // Volver a cargar los registros sin filtro
 });
