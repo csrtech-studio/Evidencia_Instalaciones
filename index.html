@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Videos de Instalación</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Gestión de Videos de Instalación</h1>
+    </header>
+
+    <main>
+        <!-- Sección del formulario -->
+        <section id="form-section">
+            <h2>Formulario</h2>
+            <form id="videoForm">
+                <label for="date">Fecha:</label>
+                <input type="text" id="date" name="date" readonly required>
+
+                <label for="technician">Técnico:</label>
+                <select id="technician" name="technician" required>
+                    <option value="Juan Pérez">Juan Pérez</option>
+                    <option value="Ana López">Ana López</option>
+                    <option value="Carlos Díaz">Carlos Díaz</option>
+                    <option value="María Torres">María Torres</option>
+                </select>
+
+                <label for="company">Empresa:</label>
+                <input type="text" id="company" name="company" required>
+
+                <div class="video-upload">
+                  <h3>Videos</h3>
+      
+                  <!-- Video Instalación -->
+                  <label for="installationVideo">Video Instalación:</label>
+                  <input type="file" id="installationVideo" accept="video/*" capture="camera" required>
+      
+                  <!-- Video TDS -->
+                  <label for="tdsVideo">Video TDS:</label>
+                  <input type="file" id="tdsVideo" accept="video/*" capture="camera" required>
+              </div>
+
+                <button type="button" id="submitBtn">Guardar</button>
+            </form>
+        </section>
+
+        <!-- Sección de filtros -->
+        <section id="filters-section">
+            <h2>Filtros</h2>
+            <div>
+              <input type="text" id="searchCompany" placeholder="Buscar por Empresa">
+              <input type="date" id="searchDate">
+              <input type="text" id="searchTechnician" placeholder="Buscar por Técnico">
+              <button id="clearFilter">Borrar Filtro</button>
+          </div>
+            </form>
+        </section>
+
+        <!-- Sección de la tabla -->
+        <section id="table-section">
+            <h2>Listado de Equipos</h2>
+            <table id="installationsTable">
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Instalador</th>
+                        <th>Empresa</th>
+                        <th>Video Instalación</th>
+                        <th>Video TDS</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Los datos se llenarán dinámicamente con JS -->
+                </tbody>
+            </table>
+        </section>
+    </main>
+    <script type="module" src="firebaseConfig.js"></script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
