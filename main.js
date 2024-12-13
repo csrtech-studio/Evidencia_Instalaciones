@@ -1,4 +1,4 @@
-import { firebaseConfig } from './firebaseConfig.js'; // Asegúrate de que esta ruta sea correcta
+import { firebaseConfig } from './firebaseConfig.js'; 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
 import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-storage.js";
@@ -10,7 +10,9 @@ const storage = getStorage(app);
 
 // Auto-set fecha actual
 document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("date").value = new Date().toISOString().split("T")[0]; // Formato YYYY-MM-DD
+    const currentDate = new Date().toISOString().split("T")[0];
+    document.getElementById("date").value = currentDate; // Establecer la fecha actual por defecto
+    document.getElementById("searchDate").value = currentDate; // Filtro por fecha actual
     loadInstallations(); // Cargar registros al inicio
 });
 
@@ -23,8 +25,8 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         const date = document.getElementById("date").value;
         const technician = document.getElementById("technician").value;
         const company = document.getElementById("company").value;
-        const installationType = document.getElementById("installationType").value; // Obtener el valor de "Activo"
-        const installationCategory = document.getElementById("installationCategory").value; // Obtener el valor de "Categoría"
+        const installationType = document.getElementById("installationType").value;
+        const installationCategory = document.getElementById("installationCategory").value;
         const installationVideo = document.getElementById("installationVideo").files[0];
         const tdsVideo = document.getElementById("tdsVideo").files[0];
 
@@ -42,15 +44,9 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         const installationVideoRef = storageRef(storage, installationVideoPath);
         const tdsVideoRef = storageRef(storage, tdsVideoPath);
 
-        await Promise.all([ // Subir ambos archivos
-            uploadBytes(installationVideoRef, installationVideo),
-            uploadBytes(tdsVideoRef, tdsVideo),
-        ]);
+        await Promise.all([uploadBytes(installationVideoRef, installationVideo), uploadBytes(tdsVideoRef, tdsVideo)]);
 
-        const [installationVideoURL, tdsVideoURL] = await Promise.all([ // Obtener las URLs de descarga
-            getDownloadURL(installationVideoRef),
-            getDownloadURL(tdsVideoRef),
-        ]);
+        const [installationVideoURL, tdsVideoURL] = await Promise.all([getDownloadURL(installationVideoRef), getDownloadURL(tdsVideoRef)]);
 
         // Guardar datos en Firebase Database
         const newEntry = {
@@ -59,8 +55,8 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
             company,
             installationVideo: installationVideoURL,
             tdsVideo: tdsVideoURL,
-            installationType, // Guardar "Activo"
-            installationCategory, // Guardar "Categoría"
+            installationType,
+            installationCategory,
         };
 
         await push(ref(db, "installations"), newEntry);
@@ -95,8 +91,8 @@ function loadInstallations(queryRef = ref(db, "installations")) {
                         <td>${data.date}</td>
                         <td>${data.technician}</td>
                         <td>${data.company}</td>
-                        <td>${data.installationType}</td> <!-- Activo -->
-                        <td>${data.installationCategory}</td> <!-- Categoría -->
+                        <td>${data.installationType}</td>
+                        <td>${data.installationCategory}</td>
                         <td><a href="${data.installationVideo}" target="_blank">Ver Video Instalación</a></td>
                         <td><a href="${data.tdsVideo}" target="_blank">Ver Video TDS</a></td>
                     </tr>
@@ -114,26 +110,26 @@ function clearForm() {
     document.getElementById("company").value = "";
     document.getElementById("installationVideo").value = "";
     document.getElementById("tdsVideo").value = "";
-    document.getElementById("technician").value = "Instalador1"; // O el valor predeterminado que desees
-    document.getElementById("date").value = new Date().toISOString().split("T")[0]; // Fecha actual por defecto
-    document.getElementById("installationType").value = ""; // Limpiar "Activo"
-    document.getElementById("installationCategory").value = ""; // Limpiar "Categoría"
+    document.getElementById("technician").value = "Instalador1";
+    document.getElementById("date").value = new Date().toISOString().split("T")[0];
+    document.getElementById("installationType").value = "";
+    document.getElementById("installationCategory").value = "";
 }
 
-// Filtro de búsqueda
-document.getElementById("searchCompany").addEventListener("input", filterInstallations);
-document.getElementById("searchDate").addEventListener("input", filterInstallations);
-document.getElementById("searchTechnician").addEventListener("input", filterInstallations);
-document.getElementById("searchInstallationType").addEventListener("input", filterInstallations);
-document.getElementById("searchInstallationCategory").addEventListener("change", filterInstallations);
+// Filtro de búsqueda con validación para null
+document.getElementById("searchCompany")?.addEventListener("input", filterInstallations);
+document.getElementById("searchDate")?.addEventListener("input", filterInstallations);
+document.getElementById("searchTechnician")?.addEventListener("input", filterInstallations);
+document.getElementById("searchInstallationType")?.addEventListener("input", filterInstallations);
+document.getElementById("searchInstallationCategory")?.addEventListener("change", filterInstallations);
 
 // Función para aplicar el filtro
 function filterInstallations() {
-    const companyFilter = document.getElementById("searchCompany").value.toLowerCase();
-    const dateFilter = document.getElementById("searchDate").value;
-    const technicianFilter = document.getElementById("searchTechnician").value.toLowerCase();
-    const installationTypeFilter = document.getElementById("searchInstallationType").value.toLowerCase();
-    const installationCategoryFilter = document.getElementById("searchInstallationCategory").value;
+    const companyFilter = document.getElementById("searchCompany")?.value?.toLowerCase() || "";
+    const dateFilter = document.getElementById("searchDate")?.value || "";
+    const technicianFilter = document.getElementById("searchTechnician")?.value?.toLowerCase() || "";
+    const installationTypeFilter = document.getElementById("searchInstallationType")?.value?.toLowerCase() || "";
+    const installationCategoryFilter = document.getElementById("searchInstallationCategory")?.value || "";
 
     const queryRef = ref(db, "installations");
     onValue(queryRef, (snapshot) => {
@@ -146,11 +142,11 @@ function filterInstallations() {
                 const data = child.val();
 
                 // Filtrar según los valores introducidos
-                const matchesCompany = data.company.toLowerCase().includes(companyFilter);
+                const matchesCompany = data.company ? data.company.toLowerCase().includes(companyFilter) : false;
                 const matchesDate = dateFilter ? data.date === dateFilter : true;
-                const matchesTechnician = data.technician.toLowerCase().includes(technicianFilter);
-                const matchesInstallationType = data.installationType.toLowerCase().includes(installationTypeFilter);
-                const matchesInstallationCategory = data.installationCategory === installationCategoryFilter || installationCategoryFilter === "";
+                const matchesTechnician = data.technician ? data.technician.toLowerCase().includes(technicianFilter) : false;
+                const matchesInstallationType = data.installationType ? data.installationType.toLowerCase().includes(installationTypeFilter) : false;
+                const matchesInstallationCategory = data.installationCategory ? data.installationCategory === installationCategoryFilter : true;
 
                 if (matchesCompany && matchesDate && matchesTechnician && matchesInstallationType && matchesInstallationCategory) {
                     rows += `
@@ -173,12 +169,25 @@ function filterInstallations() {
     });
 }
 
+
 // Limpiar filtros
-document.getElementById("clearFilter").addEventListener("click", () => {
-    document.getElementById("searchCompany").value = "";
-    document.getElementById("searchDate").value = "";
-    document.getElementById("searchTechnician").value = "";
-    document.getElementById("searchInstallationType").value = "";
-    document.getElementById("searchInstallationCategory").value = "";
-    loadInstallations(); // Volver a cargar los registros sin filtro
-});
+const clearFilterButton = document.getElementById("clearFilter");
+if (clearFilterButton) {
+    clearFilterButton.addEventListener("click", () => {
+        const searchCompany = document.getElementById("searchCompany");
+        const searchDate = document.getElementById("searchDate");
+        const searchTechnician = document.getElementById("searchTechnician");
+        const searchInstallationType = document.getElementById("searchInstallationType");
+        const searchInstallationCategory = document.getElementById("searchInstallationCategory");
+
+        // Limpiar los campos de búsqueda solo si existen
+        if (searchCompany) searchCompany.value = "";
+        if (searchDate) searchDate.value = "";
+        if (searchTechnician) searchTechnician.value = "";
+        if (searchInstallationType) searchInstallationType.value = "";
+        if (searchInstallationCategory) searchInstallationCategory.value = "";
+
+        loadInstallations(); // Volver a cargar los registros sin filtro
+    });
+}
+
