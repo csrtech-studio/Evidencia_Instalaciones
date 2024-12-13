@@ -8,19 +8,27 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const storage = getStorage(app);
 
-// Auto-set fecha actual
+// Inicializar fecha en el área de filtros al cargar la página
 document.addEventListener("DOMContentLoaded", () => {
     // Obtener la fecha actual en la zona horaria local
     const today = new Date();
     const currentDate = today.toLocaleDateString('en-CA'); // 'en-CA' garantiza el formato 'YYYY-MM-DD'
-    
+
     // Establecer la fecha actual por defecto en los campos correspondientes
-    document.getElementById("date").value = currentDate;
-    document.getElementById("searchDate").value = currentDate; // Filtro por fecha actual
-    
-    // Cargar registros al inicio
-    loadInstallations();
+    const dateInput = document.getElementById("date");
+    if (dateInput) {
+        dateInput.value = currentDate;
+    }
+
+    const searchDateInput = document.getElementById("searchDate");
+    if (searchDateInput) {
+        searchDateInput.value = currentDate; // Filtro por fecha actual
+    }
+
+    // Aplicar filtro automáticamente al cargar la página
+    filterInstallations();
 });
+
 // Manejo de envío del formulario
 document.getElementById("submitBtn").addEventListener("click", async () => {
     const submitButton = document.getElementById("submitBtn");
@@ -138,6 +146,7 @@ function clearForm() {
 
 // FILTROS DE BUSQUEDA //
 
+
 // Función para normalizar cadenas (eliminar acentos y convertir a minúsculas)
 function normalizeString(str) {
     return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -148,18 +157,11 @@ document.getElementById("searchBtn")?.addEventListener("click", filterInstallati
 
 // Función para aplicar el filtro cuando se haga clic en el botón "Buscar"
 function filterInstallations() {
-    const companyFilter = document.getElementById("searchCompany") ? document.getElementById("searchCompany").value?.toLowerCase() : "";
-    const dateFilter = document.getElementById("searchDate") ? document.getElementById("searchDate").value : "";
-    const technicianFilter = document.getElementById("searchTechnician") ? document.getElementById("searchTechnician").value?.toLowerCase() : "";
-    const installationTypeFilter = document.getElementById("searchInstallationType") ? document.getElementById("searchInstallationType").value?.toLowerCase() : "";
-    const installationCategoryFilter = document.getElementById("searchInstallationCategory") ? document.getElementById("searchInstallationCategory").value : "";
-
-    console.log({
-        companyFilter,
-        technicianFilter,
-        installationTypeFilter,
-        installationCategoryFilter
-    });
+    const companyFilter = document.getElementById("searchCompany")?.value.toLowerCase() || "";
+    const dateFilter = document.getElementById("searchDate")?.value || "";
+    const technicianFilter = document.getElementById("searchTechnician")?.value.toLowerCase() || "";
+    const installationTypeFilter = document.getElementById("searchInstallationType")?.value.toLowerCase() || "";
+    const installationCategoryFilter = document.getElementById("searchCategory")?.value || "";
 
     const queryRef = ref(db, "installations");
     onValue(queryRef, (snapshot) => {
@@ -172,19 +174,11 @@ function filterInstallations() {
                 const data = child.val();
 
                 // Filtrar según los valores introducidos
-                const matchesCompany = data.company ? normalizeString(data.company).includes(normalizeString(companyFilter)) : true;
+                const matchesCompany = companyFilter ? data.company.toLowerCase().includes(companyFilter) : true;
                 const matchesDate = dateFilter ? data.date === dateFilter : true;
-                const matchesTechnician = data.technician ? normalizeString(data.technician).includes(normalizeString(technicianFilter)) : true;
-                const matchesInstallationType = data.installationType ? normalizeString(data.installationType).includes(normalizeString(installationTypeFilter)) : true;
-                const matchesInstallationCategory = data.installationCategory ? normalizeString(data.installationCategory).includes(normalizeString(installationCategoryFilter)) : true;
-
-                console.log({
-                    matchesCompany,
-                    matchesDate,
-                    matchesTechnician,
-                    matchesInstallationType,
-                    matchesInstallationCategory
-                });
+                const matchesTechnician = technicianFilter ? data.technician.toLowerCase().includes(technicianFilter) : true;
+                const matchesInstallationType = installationTypeFilter ? data.installationType.toLowerCase().includes(installationTypeFilter) : true;
+                const matchesInstallationCategory = installationCategoryFilter ? data.installationCategory === installationCategoryFilter : true;
 
                 if (matchesCompany && matchesDate && matchesTechnician && matchesInstallationType && matchesInstallationCategory) {
                     rows += `
@@ -200,12 +194,13 @@ function filterInstallations() {
                     `;
                 }
             });
-            tableBody.innerHTML = rows;
+            tableBody.innerHTML = rows || "<tr><td colspan='7'>No se encontraron registros con los filtros aplicados.</td></tr>";
         } else {
             tableBody.innerHTML = "<tr><td colspan='7'>No hay registros disponibles.</td></tr>";
         }
     });
 }
+
 
 // Limpiar filtros
 const clearFilterButton = document.getElementById("clearFilter");
