@@ -10,11 +10,18 @@ const storage = getStorage(app);
 
 // Auto-set fecha actual
 document.addEventListener("DOMContentLoaded", () => {
-    const currentDate = new Date().toISOString().split("T")[0];
-    document.getElementById("date").value = currentDate; // Establecer la fecha actual por defecto
+    // Obtener la fecha actual en la zona horaria local
+    const today = new Date();
+    const currentDate = today.toLocaleDateString('en-CA'); // 'en-CA' garantiza el formato 'YYYY-MM-DD'
+    
+    // Establecer la fecha actual por defecto en los campos correspondientes
+    document.getElementById("date").value = currentDate;
     document.getElementById("searchDate").value = currentDate; // Filtro por fecha actual
-    loadInstallations(); // Cargar registros al inicio
+    
+    // Cargar registros al inicio
+    loadInstallations();
 });
+
 
 // Manejo de envío del formulario
 document.getElementById("submitBtn").addEventListener("click", async () => {
@@ -116,20 +123,31 @@ function clearForm() {
     document.getElementById("installationCategory").value = "";
 }
 
-// Filtro de búsqueda con validación para null
-document.getElementById("searchCompany")?.addEventListener("input", filterInstallations);
-document.getElementById("searchDate")?.addEventListener("input", filterInstallations);
-document.getElementById("searchTechnician")?.addEventListener("input", filterInstallations);
-document.getElementById("searchInstallationType")?.addEventListener("input", filterInstallations);
-document.getElementById("searchInstallationCategory")?.addEventListener("change", filterInstallations);
 
-// Función para aplicar el filtro
+// FILTROS DE BUSQUEDA //
+
+// Función para normalizar cadenas (eliminar acentos y convertir a minúsculas)
+function normalizeString(str) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+}
+
+// Filtro de búsqueda con validación para null
+document.getElementById("searchBtn")?.addEventListener("click", filterInstallations);
+
+// Función para aplicar el filtro cuando se haga clic en el botón "Buscar"
 function filterInstallations() {
-    const companyFilter = document.getElementById("searchCompany")?.value?.toLowerCase() || "";
-    const dateFilter = document.getElementById("searchDate")?.value || "";
-    const technicianFilter = document.getElementById("searchTechnician")?.value?.toLowerCase() || "";
-    const installationTypeFilter = document.getElementById("searchInstallationType")?.value?.toLowerCase() || "";
-    const installationCategoryFilter = document.getElementById("searchInstallationCategory")?.value || "";
+    const companyFilter = document.getElementById("searchCompany") ? document.getElementById("searchCompany").value?.toLowerCase() : "";
+    const dateFilter = document.getElementById("searchDate") ? document.getElementById("searchDate").value : "";
+    const technicianFilter = document.getElementById("searchTechnician") ? document.getElementById("searchTechnician").value?.toLowerCase() : "";
+    const installationTypeFilter = document.getElementById("searchInstallationType") ? document.getElementById("searchInstallationType").value?.toLowerCase() : "";
+    const installationCategoryFilter = document.getElementById("searchInstallationCategory") ? document.getElementById("searchInstallationCategory").value : "";
+
+    console.log({
+        companyFilter,
+        technicianFilter,
+        installationTypeFilter,
+        installationCategoryFilter
+    });
 
     const queryRef = ref(db, "installations");
     onValue(queryRef, (snapshot) => {
@@ -142,11 +160,19 @@ function filterInstallations() {
                 const data = child.val();
 
                 // Filtrar según los valores introducidos
-                const matchesCompany = data.company ? data.company.toLowerCase().includes(companyFilter) : false;
+                const matchesCompany = data.company ? normalizeString(data.company).includes(normalizeString(companyFilter)) : true;
                 const matchesDate = dateFilter ? data.date === dateFilter : true;
-                const matchesTechnician = data.technician ? data.technician.toLowerCase().includes(technicianFilter) : false;
-                const matchesInstallationType = data.installationType ? data.installationType.toLowerCase().includes(installationTypeFilter) : false;
-                const matchesInstallationCategory = data.installationCategory ? data.installationCategory === installationCategoryFilter : true;
+                const matchesTechnician = data.technician ? normalizeString(data.technician).includes(normalizeString(technicianFilter)) : true;
+                const matchesInstallationType = data.installationType ? normalizeString(data.installationType).includes(normalizeString(installationTypeFilter)) : true;
+                const matchesInstallationCategory = data.installationCategory ? normalizeString(data.installationCategory).includes(normalizeString(installationCategoryFilter)) : true;
+
+                console.log({
+                    matchesCompany,
+                    matchesDate,
+                    matchesTechnician,
+                    matchesInstallationType,
+                    matchesInstallationCategory
+                });
 
                 if (matchesCompany && matchesDate && matchesTechnician && matchesInstallationType && matchesInstallationCategory) {
                     rows += `
@@ -169,25 +195,26 @@ function filterInstallations() {
     });
 }
 
-
 // Limpiar filtros
 const clearFilterButton = document.getElementById("clearFilter");
 if (clearFilterButton) {
     clearFilterButton.addEventListener("click", () => {
-        const searchCompany = document.getElementById("searchCompany");
-        const searchDate = document.getElementById("searchDate");
-        const searchTechnician = document.getElementById("searchTechnician");
-        const searchInstallationType = document.getElementById("searchInstallationType");
-        const searchInstallationCategory = document.getElementById("searchInstallationCategory");
-
         // Limpiar los campos de búsqueda solo si existen
+        const searchCompany = document.getElementById("searchCompany");
         if (searchCompany) searchCompany.value = "";
+
+        const searchDate = document.getElementById("searchDate");
         if (searchDate) searchDate.value = "";
+
+        const searchTechnician = document.getElementById("searchTechnician");
         if (searchTechnician) searchTechnician.value = "";
+
+        const searchInstallationType = document.getElementById("searchInstallationType");
         if (searchInstallationType) searchInstallationType.value = "";
+
+        const searchInstallationCategory = document.getElementById("searchInstallationCategory");
         if (searchInstallationCategory) searchInstallationCategory.value = "";
 
-        loadInstallations(); // Volver a cargar los registros sin filtro
+        loadInstallations(); // Recargar todos los registros
     });
 }
-
