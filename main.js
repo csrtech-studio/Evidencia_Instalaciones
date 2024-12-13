@@ -28,6 +28,11 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
     const submitButton = document.getElementById("submitBtn");
     submitButton.disabled = true; // Deshabilitar el botón de guardar
 
+    const progressContainer = document.getElementById("progressContainer");
+    const progressBar = document.getElementById("progressBar");
+
+    progressContainer.style.display = "block"; // Mostrar la barra de progreso
+
     try {
         const date = document.getElementById("date").value;
         const technician = document.getElementById("technician").value;
@@ -37,25 +42,41 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         const installationVideo = document.getElementById("installationVideo").files[0];
         const tdsVideo = document.getElementById("tdsVideo").files[0];
 
-        // Validar campos
         if (!date || !technician || !company || !installationType || !installationCategory || !installationVideo || !tdsVideo) {
             alert("Por favor, completa todos los campos.");
-            submitButton.disabled = false; // Volver a habilitar el botón si hay un error
+            submitButton.disabled = false;
             return;
         }
 
-        // Subir videos a Firebase Storage
         const installationVideoPath = `videos/installation_${Date.now()}.mp4`;
         const tdsVideoPath = `videos/tds_${Date.now()}.mp4`;
 
         const installationVideoRef = storageRef(storage, installationVideoPath);
         const tdsVideoRef = storageRef(storage, tdsVideoPath);
 
-        await Promise.all([uploadBytes(installationVideoRef, installationVideo), uploadBytes(tdsVideoRef, tdsVideo)]);
+        // Subir los videos con una función que maneja el progreso
+        const uploadTask1 = uploadBytesResumable(installationVideoRef, installationVideo);
+        const uploadTask2 = uploadBytesResumable(tdsVideoRef, tdsVideo);
 
+        // Actualizar la barra de progreso a medida que los videos se suben
+        uploadTask1.on('state_changed', (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            progressBar.style.width = progress + "%";
+            progressBar.setAttribute('aria-valuenow', progress);
+        });
+
+        uploadTask2.on('state_changed', (snapshot) => {
+            const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+            progressBar.style.width = progress + "%";
+            progressBar.setAttribute('aria-valuenow', progress);
+        });
+
+        // Esperar a que ambos videos se suban
+        await Promise.all([uploadTask1, uploadTask2]);
+
+        // Obtener las URLs de los videos subidos
         const [installationVideoURL, tdsVideoURL] = await Promise.all([getDownloadURL(installationVideoRef), getDownloadURL(tdsVideoRef)]);
 
-        // Guardar datos en Firebase Database
         const newEntry = {
             date,
             technician,
@@ -67,19 +88,17 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         };
 
         await push(ref(db, "installations"), newEntry);
-
-        // Mostrar mensaje de éxito
-        alert("Registro guardado exitosamente.");
         
-        // Actualizar tabla y limpiar formulario
-        loadInstallations(); 
+        alert("Registro guardado exitosamente.");
+        loadInstallations();
         clearForm();
 
     } catch (error) {
         console.error("Error al guardar el registro:", error);
         alert("Ocurrió un error al guardar el registro.");
     } finally {
-        submitButton.disabled = false; // Volver a habilitar el botón después de que el usuario acepte el mensaje
+        submitButton.disabled = false;
+        progressContainer.style.display = "none"; // Ocultar la barra de progreso después de completar
     }
 });
 
