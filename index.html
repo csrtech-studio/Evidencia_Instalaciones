@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Videos de Instalación</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
     <header>
         <h1>Gestión de Videos de Instalación</h1>
@@ -54,9 +56,11 @@
                     <input type="file" id="tdsVideo" accept="video/*" capture="camera" required>
                 </div>
                 <!-- Barra de progreso (inicialmente oculta) -->
-<div id="progressContainer" class="progress" style="display: none;">
-    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-</div>
+                <div id="progressContainer" class="progress" style="display: none;">
+                    <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
+                        role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+                    </div>
+                </div>
                 <button type="button" id="submitBtn">Guardar</button>
             </form>
         </section>
@@ -104,4 +108,5 @@
     <script type="module" src="firebaseConfig.js"></script>
     <script type="module" src="main.js"></script>
 </body>
+
 </html>

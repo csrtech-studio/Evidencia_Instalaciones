@@ -1,7 +1,7 @@
 import { firebaseConfig } from './firebaseConfig.js'; 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
 import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
-import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-storage.js";
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-storage.js";
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
@@ -21,17 +21,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Cargar registros al inicio
     loadInstallations();
 });
-
-
 // Manejo de envío del formulario
 document.getElementById("submitBtn").addEventListener("click", async () => {
     const submitButton = document.getElementById("submitBtn");
-    submitButton.disabled = true; // Deshabilitar el botón de guardar
+    submitButton.disabled = true; 
 
     const progressContainer = document.getElementById("progressContainer");
     const progressBar = document.getElementById("progressBar");
 
-    progressContainer.style.display = "block"; // Mostrar la barra de progreso
+    progressContainer.style.display = "block"; 
 
     try {
         const date = document.getElementById("date").value;
@@ -54,11 +52,9 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         const installationVideoRef = storageRef(storage, installationVideoPath);
         const tdsVideoRef = storageRef(storage, tdsVideoPath);
 
-        // Subir los videos con una función que maneja el progreso
         const uploadTask1 = uploadBytesResumable(installationVideoRef, installationVideo);
         const uploadTask2 = uploadBytesResumable(tdsVideoRef, tdsVideo);
 
-        // Actualizar la barra de progreso a medida que los videos se suben
         uploadTask1.on('state_changed', (snapshot) => {
             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
             progressBar.style.width = progress + "%";
@@ -71,10 +67,8 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
             progressBar.setAttribute('aria-valuenow', progress);
         });
 
-        // Esperar a que ambos videos se suban
         await Promise.all([uploadTask1, uploadTask2]);
 
-        // Obtener las URLs de los videos subidos
         const [installationVideoURL, tdsVideoURL] = await Promise.all([getDownloadURL(installationVideoRef), getDownloadURL(tdsVideoRef)]);
 
         const newEntry = {
@@ -98,21 +92,21 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         alert("Ocurrió un error al guardar el registro.");
     } finally {
         submitButton.disabled = false;
-        progressContainer.style.display = "none"; // Ocultar la barra de progreso después de completar
+        progressContainer.style.display = "none"; 
     }
 });
 
 // Función para cargar datos en la tabla
 function loadInstallations(queryRef = ref(db, "installations")) {
     const tableBody = document.querySelector("#installationsTable tbody");
-    tableBody.innerHTML = ""; // Limpiar tabla
+    tableBody.innerHTML = ""; 
 
     onValue(queryRef, (snapshot) => {
         if (snapshot.exists()) {
             let rows = "";
             snapshot.forEach((child) => {
                 const data = child.val();
-                rows += `
+                rows += ` 
                     <tr>
                         <td>${data.date}</td>
                         <td>${data.technician}</td>
@@ -141,7 +135,6 @@ function clearForm() {
     document.getElementById("installationType").value = "";
     document.getElementById("installationCategory").value = "";
 }
-
 
 // FILTROS DE BUSQUEDA //
 
