@@ -47,14 +47,24 @@
 
                 <div class="video-upload">
                     <h3>Videos</h3>
+                
                     <!-- Video Instalación -->
-                    <label for="installationVideo">Video Instalación:</label>
-                    <input type="file" id="installationVideo" accept="video/*" capture="camera" required>
-
+                    <label>Video Instalación:</label>
+                    <div>
+                        <input type="file" id="installationVideoFile" accept="video/mp4,video/3gpp,video/quicktime">
+                        <p>O graba con la cámara:</p>
+                        <input type="file" id="installationVideoCamera" accept="video/*" capture="camera">
+                    </div>
+                
                     <!-- Video TDS -->
-                    <label for="tdsVideo">Video TDS:</label>
-                    <input type="file" id="tdsVideo" accept="video/*" capture="camera" required>
+                    <label>Video TDS:</label>
+                    <div>
+                        <input type="file" id="tdsVideoFile" accept="video/mp4,video/3gpp,video/quicktime">
+                        <p>O graba con la cámara:</p>
+                        <input type="file" id="tdsVideoCamera" accept="video/*" capture="camera">
+                    </div>
                 </div>
+                
                 <!-- Barra de progreso (inicialmente oculta) -->
                 <div id="progressContainer" class="progress" style="display: none;">
                     <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
@@ -65,24 +75,38 @@
             </form>
         </section>
 
-        <!-- Sección de filtros -->
-        <section id="filters-section">
-            <h2>Filtros</h2>
-            <div>
-                <input type="text" id="searchCompany" placeholder="Buscar por Empresa">
-                <input type="date" id="searchDate">
-                <input type="text" id="searchTechnician" placeholder="Buscar por Técnico">
-                <input type="text" id="searchInstallationType" placeholder="Buscar por Activo">
-                <select id="searchCategory">
-                    <option value="">Buscar por Categoría</option>
-                    <option value="Instalación">Instalación</option>
-                    <option value="Cambio">Cambio</option>
-                    <option value="Reinstalación">Reinstalación</option>
-                </select>
-                <button id="searchBtn">Buscar</button>
-                <button id="clearFilter">Borrar Filtro</button>
+        <section id="filters-section" class="mb-5">
+            <h2 class="text-center">Filtros</h2>
+            <div class="row g-2">
+                <div class="col-6 col-md-3">
+                    <input type="text" id="searchCompany" class="form-control form-control-sm" placeholder="Empresa">
+                </div>
+                <div class="col-6 col-md-3">
+                    <input type="date" id="searchDate" class="form-control form-control-sm">
+                </div>
+                <div class="col-6 col-md-3">
+                    <input type="text" id="searchTechnician" class="form-control form-control-sm" placeholder="Técnico">
+                </div>
+                <div class="col-6 col-md-3">
+                    <input type="text" id="searchInstallationType" class="form-control form-control-sm" placeholder="Activo">
+                </div>
+                <div class="col-6 col-md-3">
+                    <select id="searchCategory" class="form-select form-select-sm">
+                        <option value="">Categoría</option>
+                        <option value="Instalación">Instalación</option>
+                        <option value="Cambio">Cambio</option>
+                        <option value="Reinstalación">Reinstalación</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button id="searchBtn" class="btn btn-success btn-sm w-100">Buscar</button>
+                </div>
+                <div class="col-6 col-md-3">
+                    <button id="clearFilter" class="btn btn-secondary btn-sm w-100">Borrar</button>
+                </div>
             </div>
         </section>
+        
 
         <!-- Sección de la tabla -->
         <section id="table-section">
@@ -106,7 +130,7 @@
         </section>
     </main>
     <script type="module" src="firebaseConfig.js"></script>
+    <script type="module" src="auth.js"></script>
     <script type="module" src="main.js"></script>
 </body>
-
 </html>

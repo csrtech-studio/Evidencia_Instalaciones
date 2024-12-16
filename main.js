@@ -32,12 +32,12 @@ document.addEventListener("DOMContentLoaded", () => {
 // Manejo de envío del formulario
 document.getElementById("submitBtn").addEventListener("click", async () => {
     const submitButton = document.getElementById("submitBtn");
-    submitButton.disabled = true; 
+    submitButton.disabled = true;
 
     const progressContainer = document.getElementById("progressContainer");
     const progressBar = document.getElementById("progressBar");
 
-    progressContainer.style.display = "block"; 
+    progressContainer.style.display = "block";
 
     try {
         const date = document.getElementById("date").value;
@@ -45,24 +45,36 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         const company = document.getElementById("company").value;
         const installationType = document.getElementById("installationType").value;
         const installationCategory = document.getElementById("installationCategory").value;
-        const installationVideo = document.getElementById("installationVideo").files[0];
-        const tdsVideo = document.getElementById("tdsVideo").files[0];
+
+        // Obtener videos
+        const installationVideoFile = document.getElementById("installationVideoFile").files[0];
+        const installationVideoCamera = document.getElementById("installationVideoCamera").files[0];
+        const tdsVideoFile = document.getElementById("tdsVideoFile").files[0];
+        const tdsVideoCamera = document.getElementById("tdsVideoCamera").files[0];
+
+        // Prioridad: archivo > cámara
+        const installationVideo = installationVideoFile || installationVideoCamera;
+        const tdsVideo = tdsVideoFile || tdsVideoCamera;
 
         if (!date || !technician || !company || !installationType || !installationCategory || !installationVideo || !tdsVideo) {
-            alert("Por favor, completa todos los campos.");
+            alert("Por favor, completa todos los campos y selecciona al menos un video en cada opción.");
             submitButton.disabled = false;
             return;
         }
 
+        // Rutas de almacenamiento
         const installationVideoPath = `videos/installation_${Date.now()}.mp4`;
         const tdsVideoPath = `videos/tds_${Date.now()}.mp4`;
 
+        // Referencias de almacenamiento
         const installationVideoRef = storageRef(storage, installationVideoPath);
         const tdsVideoRef = storageRef(storage, tdsVideoPath);
 
+        // Subidas de archivos
         const uploadTask1 = uploadBytesResumable(installationVideoRef, installationVideo);
         const uploadTask2 = uploadBytesResumable(tdsVideoRef, tdsVideo);
 
+        // Actualizar barra de progreso
         uploadTask1.on('state_changed', (snapshot) => {
             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
             progressBar.style.width = progress + "%";
@@ -75,22 +87,26 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
             progressBar.setAttribute('aria-valuenow', progress);
         });
 
+        // Obtener URLs de descarga
         await Promise.all([uploadTask1, uploadTask2]);
+        const [installationVideoURL, tdsVideoURL] = await Promise.all([
+            getDownloadURL(installationVideoRef),
+            getDownloadURL(tdsVideoRef),
+        ]);
 
-        const [installationVideoURL, tdsVideoURL] = await Promise.all([getDownloadURL(installationVideoRef), getDownloadURL(tdsVideoRef)]);
-
+        // Crear nueva entrada
         const newEntry = {
             date,
             technician,
             company,
-            installationVideo: installationVideoURL,
-            tdsVideo: tdsVideoURL,
             installationType,
             installationCategory,
+            installationVideo: installationVideoURL,
+            tdsVideo: tdsVideoURL,
         };
 
         await push(ref(db, "installations"), newEntry);
-        
+
         alert("Registro guardado exitosamente.");
         loadInstallations();
         clearForm();
@@ -100,9 +116,10 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         alert("Ocurrió un error al guardar el registro.");
     } finally {
         submitButton.disabled = false;
-        progressContainer.style.display = "none"; 
+        progressContainer.style.display = "none";
     }
 });
+
 
 // Función para cargar datos en la tabla
 function loadInstallations(queryRef = ref(db, "installations")) {
