@@ -1,0 +1,23 @@
+{
+    "name": "Evidencia_Instalaciones",
+    "short_name": "MiPWA",
+    "description": "Pagina Web para Evidencia de Instalaciones",
+    "start_url": "/index.html",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#004080",
+    "theme_color": "#004080",
+    "icons": [
+      {
+        "src": "icons/icon-192x192.png",
+        "sizes": "192x192",
+        "type": "image/png"
+      },
+      {
+        "src": "icons/icon-512x512.png",
+        "sizes": "512x512",
+        "type": "image/png"
+      }
+    ]
+  }
+  

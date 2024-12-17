@@ -1,3 +1,4 @@
+//main.js
 import { firebaseConfig } from './firebaseConfig.js'; 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
 import { getDatabase, ref, onValue, push } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
