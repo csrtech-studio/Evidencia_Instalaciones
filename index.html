@@ -48,7 +48,7 @@
 
                 <div class="video-upload">
                     <h3>Videos</h3>
-                
+
                     <!-- Video Instalación -->
                     <label>Video Instalación:</label>
                     <div>
@@ -56,7 +56,7 @@
                         <p>O graba con la cámara:</p>
                         <input type="file" id="installationVideoCamera" accept="video/*" capture="camera">
                     </div>
-                
+
                     <!-- Video TDS -->
                     <label>Video TDS:</label>
                     <div>
@@ -65,7 +65,7 @@
                         <input type="file" id="tdsVideoCamera" accept="video/*" capture="camera">
                     </div>
                 </div>
-                
+
                 <!-- Barra de progreso (inicialmente oculta) -->
                 <div id="progressContainer" class="progress" style="display: none;">
                     <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
@@ -89,7 +89,8 @@
                     <input type="text" id="searchTechnician" class="form-control form-control-sm" placeholder="Técnico">
                 </div>
                 <div class="col-6 col-md-3">
-                    <input type="text" id="searchInstallationType" class="form-control form-control-sm" placeholder="Activo">
+                    <input type="text" id="searchInstallationType" class="form-control form-control-sm"
+                        placeholder="Activo">
                 </div>
                 <div class="col-6 col-md-3">
                     <select id="searchCategory" class="form-select form-select-sm">
@@ -107,7 +108,7 @@
                 </div>
             </div>
         </section>
-        
+
 
         <!-- Sección de la tabla -->
         <section id="table-section">
@@ -129,11 +130,21 @@
                 </tbody>
             </table>
         </section>
+
+        <!-- Mensaje de instalación -->
+        <div id="install-message"
+            style="display: none; padding: 10px 20px; background: #4caf50; color: white; border-radius: 5px; cursor: pointer;">
+            ¡Instala esta aplicación en tu dispositivo!
+        </div>
+
     </main>
     <script type="module" src="js/firebaseConfig.js"></script>
     <!--<script type="module" src="auth.js"></script>-->
     <script type="module" src="js/main.js"></script>
     <script type="module" src="js/sw-register.js"></script>
     <script type="module" src="js/app.js"></script>
+    <script src="scripts/installPrompt.js"></script>
+
 </body>
+
 </html>
