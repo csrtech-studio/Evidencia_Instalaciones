@@ -152,14 +152,26 @@ function loadInstallations(queryRef = ref(db, "installations")) {
 
 // Limpiar formulario
 function clearForm() {
-    document.getElementById("company").value = "";
-    document.getElementById("installationVideo").value = "";
-    document.getElementById("tdsVideo").value = "";
-    document.getElementById("technician").value = "Instalador1";
-    document.getElementById("date").value = new Date().toISOString().split("T")[0];
-    document.getElementById("installationType").value = "";
-    document.getElementById("installationCategory").value = "";
+    const form = document.querySelector("form");  // Asegúrate de que el formulario tenga un selector correcto
+    if (form) {
+        form.reset();  // Esto limpia todos los campos del formulario
+    }
+
+    // Establecer valores predeterminados para campos que no se manejan con `form.reset()`
+    const technicianSelect = document.getElementById("technician");
+    if (technicianSelect) technicianSelect.value = "Instalador1";
+
+    const dateInput = document.getElementById("date");
+    if (dateInput) dateInput.value = new Date().toISOString().split("T")[0];
+
+    const installationTypeInput = document.getElementById("installationType");
+    if (installationTypeInput) installationTypeInput.value = "";
+
+    const installationCategorySelect = document.getElementById("installationCategory");
+    if (installationCategorySelect) installationCategorySelect.value = "";
 }
+
+
 
 // FILTROS DE BUSQUEDA //
 
