@@ -1,31 +1,43 @@
 let deferredPrompt;
 
 window.addEventListener('beforeinstallprompt', (e) => {
-  // Evita que el navegador muestre el banner por defecto
-  e.preventDefault();
-
-  // Guarda el evento para usarlo más tarde
+  console.log('beforeinstallprompt activado'); // Para verificar que el evento se dispara
+  e.preventDefault(); // Evita el banner automático del navegador
   deferredPrompt = e;
 
-  // Muestra el mensaje de instalación
-  const installMessage = document.getElementById('install-message');
-  installMessage.style.display = 'block';
+  // Muestra un mensaje personalizado
+  const installMessage = document.createElement('div');
+  installMessage.innerHTML = `
+    <div id="install-message" style="
+      position: fixed; 
+      bottom: 20px; 
+      left: 50%; 
+      transform: translateX(-50%); 
+      background-color: #004080; 
+      color: white; 
+      padding: 10px 20px; 
+      border-radius: 5px; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      cursor: pointer;
+      z-index: 1000;">
+      📲 Instala la aplicación para una mejor experiencia. Toca aquí.
+    </div>
+  `;
+  document.body.appendChild(installMessage);
 
-  // Evento del mensaje de instalación
+  // Evento de clic para mostrar el prompt de instalación
   installMessage.addEventListener('click', () => {
-    installMessage.style.display = 'none';
+    installMessage.style.display = 'none'; // Oculta el mensaje
+    deferredPrompt.prompt(); // Muestra el prompt de instalación
 
-    // Muestra el prompt de instalación
-    deferredPrompt.prompt();
-
-    // Maneja el resultado del prompt
+    // Maneja la respuesta del usuario
     deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
         console.log('El usuario aceptó la instalación');
       } else {
         console.log('El usuario rechazó la instalación');
       }
-      deferredPrompt = null;
+      deferredPrompt = null; // Limpia la referencia
     });
   });
 });
