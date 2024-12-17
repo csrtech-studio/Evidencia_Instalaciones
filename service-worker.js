@@ -1,18 +1,18 @@
 const CACHE_NAME = "v1-cache-pwa";
 const urlsToCache = [
-    "/Evidencia_Instalaciones/",
-    "/Evidencia_Instalaciones/index.html",
-    "/Evidencia_Instalaciones/service-worker.js",
-    "/Evidencia_Instalaciones/manifest.json",
-    "/Evidencia_Instalaciones/css/style.css",
-    "/Evidencia_Instalaciones/js/firebaseConfig.js",
-    "/Evidencia_Instalaciones/js/main.js",
-    "/Evidencia_Instalaciones/js/sw-register.js",
-    "/Evidencia_Instalaciones/js/installPrompt.js",
-    "/Evidencia_Instalaciones/js/video.js", 
-    "/Evidencia_Instalaciones/icons/icon-192x192.png",
-    "/Evidencia_Instalaciones/icons/icon-512x512.png",
-    "/Evidencia_Instalaciones/icons/icon.ico"
+    "/",
+    "/index.html",
+    "/service-worker.js",
+    "/manifest.json",
+    "/css/style.css",
+    "/js/firebaseConfig.js",
+    "/js/main.js",
+    "/js/sw-register.js",
+    "/js/installPrompt.js",
+    "/js/video.js", 
+    "/icons/icon-192x192.png",
+    "/icons/icon-512x512.png",
+    "/icons/icon.ico"
   ];
 
 // Instalar el Service Worker
