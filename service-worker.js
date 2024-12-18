@@ -21,9 +21,22 @@ self.addEventListener("install", (event) => {
     caches.open(CACHE_NAME).then((cache) => {
       console.log("Archivos en caché correctamente");
       return cache.addAll(urlsToCache);
+    }).catch((error) => {
+      console.error("Error al agregar archivos al caché:", error);
     })
   );
 });
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/Evidencia_Instalaciones/service-worker.js')
+      .then((registration) => {
+        console.log('Service Worker registrado con éxito:', registration);
+      })
+      .catch((error) => {
+        console.log('Error al registrar el Service Worker:', error);
+      });
+  });
+}
 
 // Activar el Service Worker
 self.addEventListener("activate", (event) => {
