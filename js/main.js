@@ -139,8 +139,8 @@ function loadInstallations(queryRef = ref(db, "installations")) {
                         <td>${data.company}</td>
                         <td>${data.installationType}</td>
                         <td>${data.installationCategory}</td>
-                        <td><a href="${data.installationVideo}" target="_blank">Ver Video Instalación</a></td>
-                        <td><a href="${data.tdsVideo}" target="_blank">Ver Video TDS</a></td>
+                        <td><a href="${data.installationVideo}" target="_blank">Instalacion</a></td>
+                        <td><a href="${data.tdsVideo}" target="_blank">Tds</a></td>
                     </tr>
                 `;
             });
