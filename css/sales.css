@@ -1,0 +1,282 @@
+/* Estilos generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background-color: #f4f7fa;
+    color: #333;
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 20px;
+}
+
+h1, h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Formulario */
+form {
+    background-color: white;
+    padding: 10px; /* Reducir padding */
+    margin: 0 auto;
+    width: 80%;
+    max-width: 800px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="date"],
+input[type="number"],
+select,
+input[type="file"] {
+    width: 100%;
+    padding: 8px; /* Reducir padding */
+    margin-bottom: 12px; /* Reducir margen */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    background-color: #f9f9f9;
+}
+
+input[type="text"]:focus,
+input[type="tel"]:focus,
+input[type="date"]:focus,
+input[type="number"]:focus,
+select:focus,
+input[type="file"]:focus {
+    border-color: #3cb424;
+    outline: none;
+    background-color: #eaf2f8;
+}
+
+/* Botones */
+button[type="button"],
+#submitBtn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.3s;
+}
+
+button[type="button"] {
+    background-color: #3498db;
+    color: white;
+    border: none;
+}
+
+button[type="button"]:hover {
+    background-color: #2980b9;
+}
+
+/* Separar botones */
+#submitBtn {
+    background-color: #218838;
+    color: white;
+    margin-top: 15px; /* Separar el botón de guardar */
+}
+
+#submitBtn:hover {
+    background-color: #218838; /* Verde más oscuro */
+}
+
+#submitBtn:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+}
+
+/* Estilo de la tabla */
+table {
+    width: 80%;
+    margin: 30px auto;
+    border-collapse: collapse;
+    background-color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #3498db;
+    color: white;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Filtros */
+#filters-section input, #filters-section select, #filters-section button {
+    margin-bottom: 0.8rem;
+  }
+  
+  #filters-section button {
+    background-color: #ff6f61;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  #filters-section button:hover {
+    background-color: #e65a50;
+  }
+  
+  /* Tabla */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  table th, table td {
+    text-align: left;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    font-size: 0.9rem;
+  }
+  
+  table th {
+    background-color: #004080;
+    color: white;
+  }
+  
+  table tbody tr:nth-child(odd) {
+    background-color: #f2f2f2;
+  }
+  
+  table tbody tr:hover {
+    background-color: #e9e9e9;
+  }
+  
+  #filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  #filters button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+  }
+  
+  #filters button:hover {
+    background-color: #0056b3;
+  }
+  
+  #filters input, #filters select {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+  }
+  
+ /* Estilo para la barra de progreso */
+#progressContainer {
+  margin: 20px 0;
+  width: 100%; /* Asegura que la barra ocupe el ancho completo del contenedor */
+}
+
+#progressBar {
+  width: 100%; /* Hace que la barra de progreso ocupe todo el contenedor */
+  height: 20px;
+  appearance: none;
+  border-radius: 10px;
+  background-color: #f3f3f3;
+  border: 1px solid #ddd;
+}
+
+#progressBar::-webkit-progress-bar {
+  background-color: #f3f3f3;
+  border-radius: 10px;
+}
+
+#progressBar::-webkit-progress-value {
+  background-color: #4caf50; /* Color de la barra de progreso */
+  border-radius: 10px;
+}
+
+#progressPercentage {
+  text-align: center;
+  display: block;
+  font-weight: bold;
+  color: #333;
+  margin-top: 10px;
+}
+
+/* Estilo para el botón de guardar */
+#submitBtn {
+  background-color: #4caf50; /* Color de fondo verde */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+#submitBtn:hover {
+  background-color: #45a049; /* Color al pasar el mouse */
+}
+
+  /* Responsivo */
+  @media (max-width: 768px) {
+    header h1 {
+        font-size: 1.2rem;
+    }
+  
+    form, table {
+        font-size: 0.9rem;
+    }
+  
+    table th, table td {
+        padding: 0.5rem;
+    }
+  
+    #filters-section input, #filters-section select {
+        font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    form button, #filters-section button {
+        font-size: 0.8rem;
+    }
+  
+    table {
+        font-size: 0.8rem;
+    }
+  }
+  
