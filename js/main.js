@@ -30,15 +30,14 @@ document.addEventListener("DOMContentLoaded", () => {
     filterInstallations();
 });
 
-// Manejo de envío del formulario
 document.getElementById("submitBtn").addEventListener("click", async () => {
     const submitButton = document.getElementById("submitBtn");
     submitButton.disabled = true;
 
-    const progressContainer = document.getElementById("progressContainer");
-    const progressBar = document.getElementById("progressBar");
+    const uploadContainer = document.getElementById("uploadContainer");
+    const uploadPercentage = document.getElementById("uploadPercentage");
 
-    progressContainer.style.display = "block";
+    uploadContainer.style.display = "flex"; // Mostrar el contenedor
 
     try {
         const date = document.getElementById("date").value;
@@ -75,17 +74,30 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         const uploadTask1 = uploadBytesResumable(installationVideoRef, installationVideo);
         const uploadTask2 = uploadBytesResumable(tdsVideoRef, tdsVideo);
 
-        // Actualizar barra de progreso
+        // Función personalizada para mostrar el progreso
+        const showUploadProgress = (percentage) => {
+            uploadPercentage.innerHTML = `${percentage.toFixed(2)}%`;
+            if (percentage >= 100) {
+                setTimeout(() => {
+                    uploadPercentage.innerHTML = "Registro guardado correctamente.";
+                    setTimeout(() => {
+                        submitButton.disabled = false;
+                        uploadContainer.style.display = 'none';
+                        clearForm(); // Refresca la página después de ocultar el contenedor
+                    }, 2000); // Mostrar el mensaje durante 2 segundos
+                }, 2000); // Esperar 2 segundos antes de mostrar el mensaje
+            }
+        };
+
+        // Actualizar porcentaje usando la función personalizada
         uploadTask1.on('state_changed', (snapshot) => {
             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            progressBar.style.width = progress + "%";
-            progressBar.setAttribute('aria-valuenow', progress);
+            showUploadProgress(progress);
         });
 
         uploadTask2.on('state_changed', (snapshot) => {
             const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-            progressBar.style.width = progress + "%";
-            progressBar.setAttribute('aria-valuenow', progress);
+            showUploadProgress(progress);
         });
 
         // Obtener URLs de descarga
@@ -108,18 +120,12 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
 
         await push(ref(db, "installations"), newEntry);
 
-        alert("Registro guardado exitosamente.");
-        loadInstallations();
-        clearForm();
-
     } catch (error) {
         console.error("Error al guardar el registro:", error);
         alert("Ocurrió un error al guardar el registro.");
-    } finally {
-        submitButton.disabled = false;
-        progressContainer.style.display = "none";
     }
 });
+
 
 
 // Función para cargar datos en la tabla

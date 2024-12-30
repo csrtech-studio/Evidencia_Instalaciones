@@ -94,10 +94,18 @@
         </tbody>
     </table>
 
+    <div id="uploadContainer" style="display: none;">
+        <div id="uploadBox">
+            <div id="uploadSpinner"></div>
+            <p id="uploadMessage">Cargando el video...</p>
+            <p id="uploadPercentage">0%</p>
+        </div>
+    </div>
+    
   <!-- Barra de progreso (invisible al principio) -->
-<div id="progressContainer" style="display:none;">
+  <div id="progressContainer">
     <progress id="progressBar" value="0" max="100"></progress>
-    <span id="progressPercentage">0%</span>
+    <p id="progressPercentage">0%</p>
 </div>
 
 

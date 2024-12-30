@@ -154,7 +154,6 @@ document.addEventListener("DOMContentLoaded", function () {
     loadSalesData();  // Cargar los datos después de que el DOM esté listo
 });
 
-
 document.getElementById("submitBtn").addEventListener("click", async (event) => {
     event.preventDefault();  // Previene que el formulario se recargue
 
@@ -247,6 +246,9 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
                         // Actualizar la barra de progreso
                         document.getElementById("progressBar").value = progress;
                         document.getElementById("progressPercentage").textContent = `${Math.round(progress)}%`;
+
+                        // Mostrar progreso usando la función personalizada
+                        showUploadProgress(Math.round(progress));
                     },
                     (error) => reject(error),
                     async () => {
@@ -294,6 +296,22 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
 
     loadSalesData();  // Cargar los registros después de que el formulario se haya enviado
 });
+
+function showUploadProgress(percentage) {
+    const uploadContainer = document.getElementById('uploadContainer');
+    const uploadPercentage = document.getElementById('uploadPercentage');
+
+    uploadContainer.style.display = 'flex'; // Mostrar el contenedor
+    uploadPercentage.textContent = `${percentage}%`;
+
+    if (percentage >= 100) {
+        document.getElementById('uploadMessage').textContent = "¡Carga completada!";
+        setTimeout(() => {
+            uploadContainer.style.display = 'none'; // Ocultar después de un tiempo
+        }, 2000);
+    }
+}
+
 
 
 
@@ -371,9 +389,6 @@ document.querySelector("#salesTable tbody").addEventListener("click", function (
         window.location.href = `detalles.html?company=${encodeURIComponent(company)}`;
     }
 });
-
-
-
 
 
 
