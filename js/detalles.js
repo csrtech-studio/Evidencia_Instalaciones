@@ -6,80 +6,66 @@ import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.16.0
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// Obtener el parámetro de la URL
+// Obtener el UID de la URL
 const urlParams = new URLSearchParams(window.location.search);
-const company = urlParams.get('company');
-console.log('Company parameter:', company);
+const uid = urlParams.get('uid');
+console.log('UID parameter:', uid);
 
-if (company) {
-    const salesRef = ref(db, 'sales_installations');
+if (uid) {
+    const saleRef = ref(db, `sales_installations/${uid}`);
 
-    get(salesRef).then((snapshot) => {
+    get(saleRef).then((snapshot) => {
         if (snapshot.exists()) {
-            const salesData = snapshot.val();
-    
-            // Filtrar los datos de la empresa seleccionada
-            const filteredSales = Object.values(salesData).find(sale => sale.company === company);
-    
-            if (filteredSales) {
-                displayDetails(filteredSales);  // Llamar a displayDetails y pasar el objeto 'sale' correctamente
-            } else {
-                alert('No se encontraron detalles para esta empresa.');
-            }
+            const sale = snapshot.val();
+            console.log('Sale data:', sale); // Verifica que los datos están llegando correctamente
+            displayDetails(sale);
         } else {
-            console.log('No hay datos disponibles.');
+            alert('No se encontraron detalles para este UID.');
         }
     }).catch((error) => {
         console.error('Error al cargar los detalles:', error);
     });
 }
 
-
 function displayDetails(sale) {
-    console.log('Sale data:', sale);  // Verifica que los datos de 'sale' estén llegando correctamente
     // Contenedor donde se mostrarán los detalles
     const detailsContainer = document.getElementById('detailsContainer');
 
-    // Asegurarse de que videos sea un arreglo
-    const videos = sale.videos || [];
+    // Asegurarse de que videos sea un arreglo válido
+    const videos = Array.isArray(sale.videos) ? sale.videos : [];
 
-    console.log('Videos:', videos);  // Verifica que los videos están llegando correctamente
-
-    // Si hay videos disponibles, mostramos cada uno
-    if (videos.length > 0) {
-        detailsContainer.innerHTML = `
-            <h1>Compañía: ${sale.company}</h1>
-            <h2>Sucursal: ${sale.branch}</h2>
-            <p><strong>Fecha:</strong> ${sale.date}</p>
-            <p><strong>Vendedor:</strong> ${sale.seller}</p>
-            <p><strong>TDS:</strong> ${sale.tds}</p>
-            <p><strong>Contacto:</strong> ${sale.contact}</p>
-            <p>
-                <strong>Teléfono:</strong>
-                <a href="tel:${sale.phone}" style="color: #2980b9; text-decoration: none;">
-                    ${sale.phone}
-                </a>
-            </p>
-            <h3>Áreas y Videos:</h3>
-            <div id="areaVideos">
-                ${videos.map((video, index) => `
-                    <div>
-                        <p><strong>Área: ${video.area}</strong></p>
-                        <button onclick="window.open('${video.videoUrl}', '_blank')">
-                            Ver Video del Área ${index + 1}
-                        </button>
-                    </div>
-                `).join('')}
+    // Generar el contenido HTML para los videos
+    const videoHTML = videos.length > 0 
+        ? videos.map((video, index) => `
+            <div class="video-item">
+                <p><strong>Área:</strong> ${video.area || "Desconocida"}</p>
+                <button class="video-button" onclick="window.open('${video.videoUrl}', '_blank')">
+                    Ver Video del Área ${index + 1}
+                </button>
             </div>
-            <button onclick="openMap(${sale.location?.latitude || 0}, ${sale.location?.longitude || 0})">
-                Ver ubicación en Google Maps
-            </button>
-        `;
-    } else {
-        detailsContainer.innerHTML = `
-            <p>No hay áreas ni videos disponibles.</p>
-        `;
-    }
+        `).join('') 
+        : '<p>No hay áreas ni videos disponibles.</p>';
+
+    // Generar el contenido completo
+    detailsContainer.innerHTML = `
+        <h1>Compañía: ${sale.company || "No especificada"}</h1>
+        <h2>Sucursal: ${sale.branch || "No especificada"}</h2>
+        <p><strong>Fecha:</strong> ${sale.date || "No especificada"}</p>
+        <p><strong>Vendedor:</strong> ${sale.seller || "No especificado"}</p>
+        <p><strong>TDS:</strong> ${sale.tds || "No especificado"}</p>
+        <p><strong>Contacto:</strong> ${sale.contact || "No especificado"}</p>
+        <p>
+            <strong>Teléfono:</strong>
+            <a href="tel:${encodeURIComponent(sale.phone || '')}" style="color: #2980b9; text-decoration: none;">
+                ${sale.phone || "No disponible"}
+            </a>
+        </p>
+        <h3>Áreas y Videos:</h3>
+        <div id="areaVideos">${videoHTML}</div>
+        <button class="map-button" onclick="openMap(${sale.location?.latitude || 0}, ${sale.location?.longitude || 0})">
+            Ver ubicación en Google Maps
+        </button>
+    `;
 }
 
 function openMap(latitude, longitude) {

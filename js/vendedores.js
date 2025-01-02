@@ -154,8 +154,9 @@ document.addEventListener("DOMContentLoaded", function () {
     loadSalesData();  // Cargar los datos después de que el DOM esté listo
 });
 
+// Boton para Guardar el Formulario
 document.getElementById("submitBtn").addEventListener("click", async (event) => {
-    event.preventDefault();  // Previene que el formulario se recargue
+    event.preventDefault(); // Previene que el formulario se recargue
 
     const submitButton = document.getElementById("submitBtn");
     submitButton.disabled = true;
@@ -171,7 +172,6 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
         const phoneInput = document.getElementById("cellphone");
         const videoCountInput = document.getElementById("videoCount");
 
-        // Verificar que los campos existen y obtener sus valores
         const date = dateInput ? dateInput.value : null;
         const seller = sellerInput ? sellerInput.value : null;
         const company = companyInput ? companyInput.value : null;
@@ -181,7 +181,6 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
         const phone = phoneInput ? phoneInput.value : null;
         let videoCount = videoCountInput ? parseInt(videoCountInput.value) || 0 : 0;
 
-        // Validar que todos los campos estén completos
         if (!date || !seller || !company || !branch || !tdsValue || !contact || !phone || videoCount <= 0) {
             let missingFields = [];
 
@@ -199,56 +198,46 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
             return;
         }
 
-        // Verificar que videoCount esté dentro del rango de 1 a 50
         if (videoCount < 1 || videoCount > 50) {
             alert("La cantidad de videos debe estar entre 1 y 50.");
             submitButton.disabled = false;
             return;
         }
 
-        // Verificar que la ubicación esté guardada
         if (!userLocation) {
             alert("Por favor, guarda la ubicación antes de enviar el formulario.");
-            submitButton.disabled = false;  // Deshabilitar el botón para evitar más envíos
-            return;  // Evita que el formulario se envíe y detiene la ejecución
+            submitButton.disabled = false;
+            return;
         }
 
-        // Obtener los valores de las áreas y los videos
         const videoUploads = [];
-        const videoData = [];  // Para almacenar tanto el área como el video
+        const videoData = [];
 
-        // Mostrar la barra de progreso al inicio de las cargas
         document.getElementById("progressContainer").style.display = "block";
 
         for (let i = 1; i <= videoCount; i++) {
             const areaInput = document.getElementById(`videoArea${i}`);
             const videoInput = document.getElementById(`videoFile${i}`);
-            
+        
             let area = areaInput?.value.trim();
             if (!area) {
                 alert(`El área para el video ${i} no está especificada. Por favor, ingresa un valor.`);
                 submitButton.disabled = false;
                 return;
             }
-
+        
             const videoFile = videoInput?.files[0];
-            
+        
             const videoPath = `sales_installations/video_${Date.now()}_${i}.mp4`;
             const videoRef = storageRef(storage, videoPath);
             const uploadTask = uploadBytesResumable(videoRef, videoFile);
-
+        
             const uploadPromise = new Promise((resolve, reject) => {
                 uploadTask.on(
                     'state_changed',
                     (snapshot) => {
-                        // Calcular el porcentaje de progreso
                         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                        // Actualizar la barra de progreso
-                        document.getElementById("progressBar").value = progress;
-                        document.getElementById("progressPercentage").textContent = `${Math.round(progress)}%`;
-
-                        // Mostrar progreso usando la función personalizada
-                        showUploadProgress(Math.round(progress));
+                        showUploadProgress(i, Math.round(progress)); // Mostrar progreso para cada video
                     },
                     (error) => reject(error),
                     async () => {
@@ -258,18 +247,20 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
                     }
                 );
             });
-            
+        
             videoUploads.push(uploadPromise);
         }
+        
 
-        // Esperar a que todos los videos se suban
         await Promise.all(videoUploads);
-
-        // Ocultar la barra de progreso cuando todos los videos hayan sido subidos
         document.getElementById("progressContainer").style.display = "none";
 
-        // Crear el objeto con los datos a guardar en Firebase
+        // Generar UID único
+        const uid = '_' + Math.random().toString(36).substr(2, 9);
+
+        // Crear el objeto con los datos a guardar
         const newEntry = {
+            uid, // Incluir el UID único
             date,
             seller,
             company,
@@ -277,16 +268,15 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
             tds: tdsValue,
             contact,
             phone,
-            videos: videoData,  // Ahora guardamos un arreglo de objetos { area, videoUrl }
-            location: userLocation,  // Guardar la ubicación del usuario
+            videos: videoData,
+            location: userLocation,
         };
 
         // Guardar los datos en Firebase
         await push(ref(db, "sales_installations"), newEntry);
 
         alert("Registro guardado exitosamente.");
-        clearForm();  // Limpiar el formulario
-
+        clearForm();
     } catch (error) {
         console.error("Error al guardar el registro:", error);
         alert("Ocurrió un error al guardar el registro. Verifica la consola para más detalles.");
@@ -294,24 +284,45 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
         submitButton.disabled = false;
     }
 
-    loadSalesData();  // Cargar los registros después de que el formulario se haya enviado
+    loadSalesData();
 });
 
-function showUploadProgress(percentage) {
+function showUploadProgress(videoIndex, percentage, totalVideos) {
     const uploadContainer = document.getElementById('uploadContainer');
-    const uploadPercentage = document.getElementById('uploadPercentage');
+    uploadContainer.style.display = 'block'; // Mostrar el contenedor
 
-    uploadContainer.style.display = 'flex'; // Mostrar el contenedor
-    uploadPercentage.textContent = `${percentage}%`;
-
-    if (percentage >= 100) {
-        document.getElementById('uploadMessage').textContent = "¡Carga completada!";
-        setTimeout(() => {
-            uploadContainer.style.display = 'none'; // Ocultar después de un tiempo
-        }, 2000);
+    // Verifica si ya existe un elemento de progreso para este video
+    let videoProgress = document.getElementById(`videoProgress${videoIndex}`);
+    if (!videoProgress) {
+        videoProgress = document.createElement('div');
+        videoProgress.id = `videoProgress${videoIndex}`;
+        videoProgress.style.marginBottom = '10px'; // Espaciado entre progresos
+        videoProgress.style.textAlign = 'center'; // Centrar texto
+        uploadContainer.appendChild(videoProgress);
     }
-}
 
+    // Actualizar el progreso del video actual
+    videoProgress.innerHTML = `
+        <strong>Video ${videoIndex}:</strong> ${percentage}%
+        ${percentage >= 100 ? '<span style="color: green;">(Completado)</span>' : ''}
+    `;
+
+    // Si todos los videos están cargados, mostrar un mensaje final
+    const completedVideos = document.querySelectorAll('#uploadContainer div span[style="color: green;"]').length;
+    if (completedVideos === totalVideos) {
+        setTimeout(() => {
+            uploadContainer.innerHTML = `
+                <p style="color: green; font-weight: bold; text-align: center;">
+                    ¡Todos los videos se han cargado exitosamente!
+                </p>
+            `;
+            setTimeout(() => {
+                uploadContainer.style.display = 'none'; // Ocultar después de unos segundos
+                alert("Registro guardado exitosamente.");
+            }, 1000);
+        }, 1000);
+    }   
+}
 
 
 
@@ -331,12 +342,11 @@ function clearForm() {
     locationButton.textContent = "Guardar Ubicación";
 }
 
-// Función para cargar los registros en la tabla
 function loadSalesData() {
     const salesTableBody = document.querySelector('#salesTable tbody');
     if (!salesTableBody) {
         console.error('No se encontró el contenedor de la tabla.');
-        return;  // Detener la ejecución si no se encuentra el contenedor
+        return; // Detener la ejecución si no se encuentra el contenedor
     }
 
     const salesRef = ref(db, 'sales_installations');
@@ -356,20 +366,11 @@ function loadSalesData() {
                     <td>${sale.seller}</td>
                     <td>${sale.company}</td>
                     <td>${sale.branch}</td>
-                   
+                    <td><button data-uid="${id}">Ver</button></td>
                 `;
+
                 salesTableBody.appendChild(row);
             });
-
-            // Agregar evento para eliminar registros
-            const deleteBtns = document.querySelectorAll('.deleteBtn');
-            deleteBtns.forEach((btn) => {
-                btn.addEventListener('click', (event) => {
-                    const recordId = event.target.getAttribute('data-id');
-                    deleteRecord(recordId);
-                });
-            });
-
         } else {
             console.log("No hay datos disponibles.");
         }
@@ -378,18 +379,18 @@ function loadSalesData() {
     });
 }
 
-// Agregar un evento para hacer clic en una fila de la tabla
 document.querySelector("#salesTable tbody").addEventListener("click", function (e) {
     const row = e.target.closest('tr');
-    const companyCell = row?.querySelector('td:nth-child(3)'); // Tercera celda (Compañía)
 
-    if (companyCell) {
-        const company = companyCell.textContent;  // Obtener el nombre de la compañía
-        // Redirigir a la página de detalles con el nombre de la compañía en la URL
-        window.location.href = `detalles.html?company=${encodeURIComponent(company)}`;
+    // Si hacemos clic en el botón "Ver"
+    if (e.target && e.target.tagName === 'BUTTON' && e.target.textContent === 'Ver') {
+        const uid = e.target.dataset.uid; // Obtener el UID del dataset
+        if (uid) {
+            // Redirigir a la página de detalles con el UID en la URL
+            window.location.href = `detalles.html?uid=${encodeURIComponent(uid)}`;
+        }
     }
 });
-
 
 
 // Función para normalizar cadenas (eliminar acentos y convertir a minúsculas)

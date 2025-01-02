@@ -203,18 +203,20 @@ tr:hover {
   }
   
   /* Contenedor de carga */
-#uploadContainer {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.6);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
+  #uploadContainer {
+    display: none; /* Inicialmente oculto */
+    background-color: rgba(86, 67, 194, 0.8); /* Fondo negro semitransparente */
+    color: white; /* Texto en blanco */
+    border-radius: 10px; /* Bordes redondeados */
+    padding: 20px; /* Espaciado interno */
+    max-width: 400px; /* Ancho máximo */
+    margin: 20px auto; /* Centrar horizontalmente */
+    box-shadow: 0 4px 8px rgba(28, 2, 77, 0.2); /* Sombra */
+    font-family: Arial, sans-serif; /* Fuente */
+    text-align: center; /* Centrar el texto */
 }
+
+
 
 #uploadBox {
   background-color: white;
@@ -310,3 +312,27 @@ tr:hover {
     }
   }
   
+  button[data-uid] {
+    background-color: #3498db; /* Azul moderno */
+    color: white; /* Texto blanco */
+    border: none; /* Sin bordes */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 10px 20px; /* Espaciado interno */
+    font-size: 14px; /* Tamaño de fuente */
+    font-weight: bold; /* Fuente en negrita */
+    cursor: pointer; /* Indicador de botón clickeable */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+    transition: all 0.3s ease; /* Transición suave */
+}
+
+button[data-uid]:hover {
+    background-color: #2980b9; /* Azul más oscuro al pasar el mouse */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+    transform: translateY(-2px); /* Levanta el botón ligeramente */
+}
+
+button[data-uid]:active {
+    background-color: #1c6391; /* Azul aún más oscuro al hacer clic */
+    transform: translateY(0px); /* Restaura el botón */
+    box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.15); /* Reduce la sombra */
+}

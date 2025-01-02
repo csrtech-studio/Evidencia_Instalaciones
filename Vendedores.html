@@ -6,8 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Instalaciones </title>
     <link rel="stylesheet" href="css/sales.css">
-    <link rel="icon" href="/Evidencia_Instalaciones/icons/icon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="/Evidencia_Instalaciones/icons/icon-192x192.png">
 </head>
 
 <body>
@@ -53,6 +51,10 @@
         </div>
         <button type="submit" id="submitBtn">Guardar</button>
     </form>
+    <div id="uploadContainer">
+        <label>Guardando Videos Favor de Esperar..</label>
+        <!-- Aquí se mostrarán los progresos de los videos -->
+    </div>
 
     <section id="filters-section" class="mb-5">
         <h2 class="text-center">Filtros</h2>
@@ -89,28 +91,13 @@
                 <th>Vendedor</th>
                 <th>Compañía</th>
                 <th>Sucursal</th>
+                <th>Ver</th>
             </tr>
         </thead>
         <tbody>
             <!-- Los registros se cargarán aquí dinámicamente -->
         </tbody>
-    </table>
-
-    <div id="uploadContainer" style="display: none;">
-        <div id="uploadBox">
-            <div id="uploadSpinner"></div>
-            <p id="uploadMessage">Cargando el video...</p>
-            <p id="uploadPercentage">0%</p>
-        </div>
-    </div>
-    
-  <!-- Barra de progreso (invisible al principio) -->
-  <div id="progressContainer">
-    <progress id="progressBar" value="0" max="100"></progress>
-    <p id="progressPercentage">0%</p>
-</div>
-
-
+    </table>  
     <script type="module" src="js/vendedores.js"></script>
 </body>
 
