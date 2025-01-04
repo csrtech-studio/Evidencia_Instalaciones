@@ -27,45 +27,94 @@ if (uid) {
     });
 }
 
+function getLabelInSpanish(label) {
+    const translations = {
+        'company': 'Compañía',
+        'contact': 'Contacto',
+        'date': 'Fecha',
+        'phone': 'Teléfono',
+        'seller': 'Vendedor',
+        'tdsValue': 'TDS',
+        'area': 'Área',
+        'waterLocation': 'Tomas de Agua',
+        'drain': 'Desagüe',
+        // Agrega más traducciones según sea necesario
+    };
+    return translations[label] || label;
+}
+
+
 function displayDetails(sale) {
-    // Contenedor donde se mostrarán los detalles
     const detailsContainer = document.getElementById('detailsContainer');
 
-    // Asegurarse de que videos sea un arreglo válido
-    const videos = Array.isArray(sale.videos) ? sale.videos : [];
+    // Generar HTML para las imágenes agrupadas por equipo (Equipo 1, Equipo 2, etc.)
+    const imagesHTML = sale.images 
+        ? Object.keys(sale.images).map((groupKey, groupIndex) => {
+            const groupImages = sale.images[groupKey];
 
-    // Generar el contenido HTML para los videos
-    const videoHTML = videos.length > 0 
-        ? videos.map((video, index) => `
-            <div class="video-item">
-                <p><strong>Área:</strong> ${video.area || "Desconocida"}</p>
-                <button class="video-button" onclick="window.open('${video.videoUrl}', '_blank')">
-                    Ver Video del Área ${index + 1}
-                </button>
-            </div>
-        `).join('') 
-        : '<p>No hay áreas ni videos disponibles.</p>';
+            // Reorganizar las imágenes según el tipo deseado
+            const orderedImages = ['area', 'waterLocation', 'drain']
+                .map(type => groupImages.find(image => image.type === type))
+                .filter(Boolean); // Filtrar imágenes inexistentes
 
-    // Generar el contenido completo
+            const groupHTML = orderedImages.map((image, index) => `
+                <div class="image-item">
+                    <label><strong>${getLabelInSpanish(image.type)}:</strong> ${image.name || "No especificado"}</label>
+                    <img src="${image.url}" alt="${image.type}" 
+                         style="max-width: 100%; margin-top: 5px; cursor: pointer;" 
+                         onclick="openModal('${image.url}', '${image.name || "Sin descripción"}')">
+                </div>
+            `).join('');
+
+            return `
+                <div class="image-group">
+                    <h4>Equipo ${groupIndex + 1}</h4>
+                    <div class="image-group-container">
+                        ${groupHTML}
+                    </div>
+                </div>
+            `;
+        }).join('')
+        : '<p>No hay imágenes disponibles.</p>';
+
+    // Crear el HTML principal
     detailsContainer.innerHTML = `
         <h1>Compañía: ${sale.company || "No especificada"}</h1>
-        <h2>Sucursal: ${sale.branch || "No especificada"}</h2>
         <p><strong>Fecha:</strong> ${sale.date || "No especificada"}</p>
         <p><strong>Vendedor:</strong> ${sale.seller || "No especificado"}</p>
-        <p><strong>TDS:</strong> ${sale.tds || "No especificado"}</p>
+        <p><strong>TDS:</strong> ${sale.tdsValue || "No especificado"}</p>
         <p><strong>Contacto:</strong> ${sale.contact || "No especificado"}</p>
         <p>
             <strong>Teléfono:</strong>
             <a href="tel:${encodeURIComponent(sale.phone || '')}" style="color: #2980b9; text-decoration: none;">
                 ${sale.phone || "No disponible"}
-            </a>
-        </p>
-        <h3>Áreas y Videos:</h3>
-        <div id="areaVideos">${videoHTML}</div>
-        <button class="map-button" onclick="openMap(${sale.location?.latitude || 0}, ${sale.location?.longitude || 0})">
+            </a><br>
+              <button class="map-button" onclick="openMap(${sale.location?.latitude || 0}, ${sale.location?.longitude || 0})">
             Ver ubicación en Google Maps
         </button>
+        </p>
+        <h3>Imágenes de Áreas, Tomas y Desagües:</h3>
+        <div id="imageGallery">${imagesHTML}</div>
+      
     `;
+}
+
+
+// Función para abrir el modal
+function openModal(imageUrl, captionText) {
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const caption = document.getElementById('caption');
+
+    modal.style.display = "block";
+    modalImg.src = imageUrl;
+    caption.textContent = captionText;
+}
+
+// Función para cerrar el modal
+function closeModal() {
+    const modal = document.getElementById('imageModal');
+    modal.style.display = "none";
 }
 
 function openMap(latitude, longitude) {
@@ -77,5 +126,8 @@ function openMap(latitude, longitude) {
     window.open(url, "_blank");
 }
 
-// Expón la función al contexto global
+
+// Expón las funciones al contexto global
 window.openMap = openMap;
+window.openModal = openModal;
+window.closeModal = closeModal;

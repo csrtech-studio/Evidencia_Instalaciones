@@ -19,21 +19,20 @@ h1, h2 {
     color: #2c3e50;
     margin-bottom: 20px;
 }
-
 /* Formulario */
 form {
     background-color: white;
-    padding: 10px; /* Reducir padding */
+    padding: 8px; /* Reducir padding */
     margin: 0 auto;
-    width: 80%;
-    max-width: 800px;
+    width: 95%; /* Más ancho para aprovechar el espacio */
+    max-width: 600px; /* Reducir max-width para hacerlos más compactos */
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 4px; /* Reducir margen inferior */
     font-weight: bold;
     color: #2c3e50;
 }
@@ -44,9 +43,9 @@ input[type="date"],
 input[type="number"],
 select,
 input[type="file"] {
-    width: 100%;
-    padding: 8px; /* Reducir padding */
-    margin-bottom: 12px; /* Reducir margen */
+    width: calc(100% - 16px); /* Reducir padding interno */
+    padding: 6px; /* Reducir padding */
+    margin-bottom: 6px; /* Reducir margen */
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 14px;
@@ -67,9 +66,9 @@ input[type="file"]:focus {
 /* Botones */
 button[type="button"],
 #submitBtn {
-    padding: 10px 20px;
+    padding: 8px 16px; /* Reducir padding */
     border-radius: 5px;
-    font-size: 16px;
+    font-size: 14px; /* Reducir tamaño de fuente */
     cursor: pointer;
     width: 100%;
     transition: background-color 0.3s;
@@ -84,6 +83,12 @@ button[type="button"] {
 button[type="button"]:hover {
     background-color: #2980b9;
 }
+
+/* Barra de progreso */
+#progressContainer {
+    margin-top: 8px; /* Espaciado entre progreso y formulario */
+}
+
 
 /* Separar botones */
 #submitBtn {
@@ -216,6 +221,65 @@ tr:hover {
     text-align: center; /* Centrar el texto */
 }
 
+/* Estilo general del contenedor de imágenes */
+#imagesContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 20px;
+  justify-content: left;
+}
+
+.image-wrapper {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  width: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.image-wrapper:hover {
+  transform: translateY(-5px);
+}
+
+/* Estilo para las etiquetas e inputs */
+label, input, button {
+  display: block;
+  margin-bottom: 8px;
+  width: 100%;
+}
+
+input[type="text"], input[type="file"] {
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+button.delete-btn, button.delete-miniatura-btn {
+  background-color: #FF4C4C;
+}
+
+button.delete-btn:hover, button.delete-miniatura-btn:hover {
+  background-color: #FF0000;
+}
+
+
 
 
 #uploadBox {
@@ -256,18 +320,116 @@ tr:hover {
 
 
  /* Estilo para la barra de progreso */
- #progressContainer {
-  display: none;
-  margin-top: 20px;
-  text-align: center;
-}
-#progressBar {
+ /* Contenedor de carga */
+#uploadContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 20px;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
 }
-#progressPercentage {
+
+#uploadBox {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 300px;
+}
+
+#uploadSpinner {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid #3498db;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 10px auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+#uploadMessage {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+#uploadPercentage {
+  font-size: 20px;
+  font-weight: bold;
+  color: #3498db;
+}
+
+
+/* Estilo para el contenedor de la barra de progreso */
+#progressContainer {
+  width: 100%; 
+  height: 20px; /* Altura de la barra de progreso */
+  background-color: #f3f3f3; /* Color de fondo del contenedor */
+  border-radius: 10px; /* Bordes redondeados */
+  display: none; /* Ocultar por defecto hasta que se inicie la carga */
   margin-top: 10px;
-}/* Estilo para el botón de guardar */
+}
+
+/* Estilo para la barra de progreso */
+#progressBar {
+  height: 100%; /* Asegurarse de que la barra ocupe toda la altura del contenedor */
+  width: 0%; /* Inicialmente con 0% de ancho */
+  background-color: #017505; /* Color de la barra */
+  border-radius: 10px; /* Bordes redondeados */
+  transition: width 0.2s ease; /* Animación suave al cambiar el ancho */
+}
+
+/* Estilo opcional para el texto dentro de la barra de progreso */
+#progressBarText {
+  position: absolute;
+  color: white;
+  font-weight: bold;
+  display: inline-block;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  header h1 {
+      font-size: 1.2rem;
+  }
+
+  form, table {
+      font-size: 0.9rem;
+  }
+
+  table th, table td {
+      padding: 0.5rem;
+  }
+
+  #filters-section input, #filters-section select {
+      font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  form button, #filters-section button {
+      font-size: 0.8rem;
+  }
+
+  table {
+      font-size: 0.8rem;
+  }
+}
+/* Estilo para el botón de guardar */
 #submitBtn {
   background-color: #4caf50; /* Color de fondo verde */
   color: white;

@@ -5,9 +5,11 @@ body {
     margin: 0;
     padding: 0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
     height: 100vh;
+    box-sizing: border-box;
 }
 
 #detailsContainer {
@@ -80,32 +82,82 @@ button:hover {
 }
 
 /* Estilo para el contenedor de áreas y videos */
-#areaVideos {
-    margin-top: 20px;
+.image-group {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
 }
 
-#areaVideos div {
-    background-color: #ecf0f1;
-    padding: 15px;
-    margin-bottom: 15px;
+.image-group h4 {
+    margin-bottom: 10px;
+    color: #2c3e50;
+}
+
+.image-group-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.image-item {
+    flex: 1 1 calc(33.333% - 10px); /* Tres imágenes por fila */
+    box-sizing: border-box;
+}
+
+.image-item img {
+    border: 1px solid #ccc;
     border-radius: 5px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-#areaVideos p {
+/* Estilo de la ventana modal */
+.modal {
+    display: none; /* Ocultar por defecto */
+    position: fixed;
+    z-index: 1000; /* Por encima de otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9); /* Fondo oscuro con transparencia */
+}
+
+/* Imagen dentro del modal */
+.modal-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 90%;
+    border: 5px solid white;
+    border-radius: 10px;
+}
+
+/* Texto debajo de la imagen */
+#caption {
+    text-align: center;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+}
+
+/* Botón para cerrar */
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: white;
+    font-size: 40px;
     font-weight: bold;
-    margin-bottom: 10px;
+    cursor: pointer;
 }
 
-#areaVideos button {
-    background-color: #27ae60;
-    border-radius: 5px;
-    font-weight: normal;
-    padding: 8px 15px;
-    transition: background-color 0.3s ease;
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+    cursor: pointer;
 }
-
-#areaVideos button:hover {
-    background-color: #2ecc71;
-}
-
