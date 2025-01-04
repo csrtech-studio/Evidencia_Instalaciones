@@ -129,7 +129,7 @@ document.getElementById("imageCount").addEventListener("input", function () {
         // Campo de Área
         const labelArea = document.createElement("label");
         labelArea.setAttribute("for", `areaImage${i}`);
-        labelArea.textContent = `Área:`;
+        labelArea.textContent = `Área ${i}:`;
 
         const inputArea = document.createElement("input");
         inputArea.type = "text";
