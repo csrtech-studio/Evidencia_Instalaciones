@@ -144,8 +144,7 @@ document.getElementById("imageCount").addEventListener("input", function () {
         labelAreaFile.textContent = `Área: Seleccione archivo`;
 
         const inputAreaFile = document.createElement("input");
-        imputAreaFile.capture = "camera";
-        inputAreaFile.type = "file";
+        inputAreaFile.type = "camera";
         inputAreaFile.accept = "image/*";
         inputAreaFile.id = `areaFile${i}`;
         inputAreaFile.name = `areaFile${i}`;
