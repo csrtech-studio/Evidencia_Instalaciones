@@ -47,6 +47,20 @@ function getLabelInSpanish(label) {
 function displayDetails(sale) {
     const detailsContainer = document.getElementById('detailsContainer');
 
+    // Evaluar TDS y asignar calidad del agua
+    let calidadAgua = '';
+    if (sale.tdsValue) {
+        if (sale.tdsValue <= 500) {
+            calidadAgua = 'Buena para instalar';
+        } else if (sale.tdsValue <= 800) {
+            calidadAgua = 'Mala para instalar';
+        } else {
+            calidadAgua = 'No recomendable para instalar';
+        }
+    } else {
+        calidadAgua = 'No especificado';
+    }
+
     // Generar HTML para las imágenes agrupadas por equipo (Equipo 1, Equipo 2, etc.)
     const imagesHTML = sale.images 
         ? Object.keys(sale.images).map((groupKey, groupIndex) => {
@@ -77,27 +91,37 @@ function displayDetails(sale) {
         }).join('')
         : '<p>No hay imágenes disponibles.</p>';
 
+    // Botón para abrir imagen específica de TDS
+    const tdsImageButton = `
+        <button class="tds-button" onclick="openModal('${sale.images['img2'][0]?.url}', '${sale.images['img2'][0]?.name || "TDS"}')">
+            Ver TDS
+        </button>
+    `;
+
     // Crear el HTML principal
     detailsContainer.innerHTML = `
         <h1>Compañía: ${sale.company || "No especificada"}</h1>
         <p><strong>Fecha:</strong> ${sale.date || "No especificada"}</p>
         <p><strong>Vendedor:</strong> ${sale.seller || "No especificado"}</p>
-        <p><strong>TDS:</strong> ${sale.tdsValue || "No especificado"}</p>
+        <p><strong>TDS:</strong> ${sale.tdsValue || "No especificado"} - ${calidadAgua} ${tdsImageButton}</p>
         <p><strong>Contacto:</strong> ${sale.contact || "No especificado"}</p>
         <p>
             <strong>Teléfono:</strong>
             <a href="tel:${encodeURIComponent(sale.phone || '')}" style="color: #2980b9; text-decoration: none;">
                 ${sale.phone || "No disponible"}
             </a><br>
-              <button class="map-button" onclick="openMap(${sale.location?.latitude || 0}, ${sale.location?.longitude || 0})">
-            Ver ubicación en Google Maps
-        </button>
+            <button class="map-button" onclick="openMap(${sale.location?.latitude || 0}, ${sale.location?.longitude || 0})">
+                Ver ubicación en Google Maps
+            </button>
         </p>
         <h3>Imágenes de Áreas, Tomas y Desagües:</h3>
         <div id="imageGallery">${imagesHTML}</div>
-      
     `;
 }
+// Asegura que las funciones están disponibles globalmente
+window.openMap = openMap;
+window.openModal = openModal;
+window.closeModal = closeModal;
 
 
 // Función para abrir el modal

@@ -161,3 +161,17 @@ button:hover {
     text-decoration: none;
     cursor: pointer;
 }
+
+.tds-button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.tds-button:hover {
+    background-color: #1a5b7a;
+}

@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Instalaciones</title>
+    <link rel="icon" href="/Evidencia_Instalaciones/icons/icon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="/Evidencia_Instalaciones/icons/icon-192x192.png">
     <link rel="stylesheet" href="css/sales.css">
 </head>
 
@@ -31,10 +33,16 @@
         <input type="tel" id="cellphone" name="cellphone" placeholder="Número de celular" required><br>
 
         <label for="tds">TDS de Red:</label>
-        <input type="number" id="tds" name="tds" placeholder="Ejemplo: 350" required><br>
+        <div style="display: flex; align-items: center;">
+            <input type="number" id="tds" name="tds" placeholder="Ejemplo: 350" required><br>
+            <button type="button" id="openCameraBtn">Tomar Foto</button>
+            <input type="file" accept="image/*" capture="environment" id="tdsFile" name="tdsFile" style="display: none;" required>
+        </div>
+         <span id="tdsFileName" class="file-name">No se ha cargado ninguna foto.</span>
+
 
         <label for="imageCount">Cantidad de Equipos a Instalar:</label>
-        <input type="number" id="imageCount" name="imageCount" min="1" max="50"  placeholder="Cantidad" required><br>
+        <input type="number" id="imageCount" name="imageCount" min="1" max="50" placeholder="Cantidad" required><br>
 
 
         <div id="imagesContainer"></div>
@@ -44,8 +52,8 @@
 
         <!-- Barra de progreso (inicialmente oculta) -->
         <div id="progressContainer" class="progress" style="display: none;">
-            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated"
-                role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
             </div>
         </div>
 
@@ -89,11 +97,11 @@
         <tbody>
             <!-- Los registros se cargarán aquí dinámicamente -->
         </tbody>
-    </table>  
+    </table>
 
     <script type="module" src="js/vendedores.js"></script>
 
-    
+
 </body>
 
 </html>

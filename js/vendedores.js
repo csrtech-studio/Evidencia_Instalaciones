@@ -121,7 +121,6 @@ document.getElementById("imageCount").addEventListener("input", function () {
     // Limpiar contenedor de imágenes
     imagesContainer.innerHTML = "";
 
-    // Generar campos de imágenes dinámicamente
     for (let i = 1; i <= imageCount; i++) {
         const imageWrapper = document.createElement("div");
         imageWrapper.classList.add("image-wrapper");
@@ -138,19 +137,30 @@ document.getElementById("imageCount").addEventListener("input", function () {
         inputArea.placeholder = `Ingrese área para la imagen ${i}`;
         inputArea.required = true;
 
-        // Campo de Selección de archivo para Área
         const labelAreaFile = document.createElement("label");
+        labelAreaFile.textContent = "Tomar Foto (Área)";
+        labelAreaFile.classList.add("custom-file-button");
         labelAreaFile.setAttribute("for", `areaFile${i}`);
-        labelAreaFile.textContent = `Área: Seleccione archivo`;
 
         const inputAreaFile = document.createElement("input");
         inputAreaFile.type = "file";
         inputAreaFile.accept = "image/*";
+        inputAreaFile.capture = "environment";
         inputAreaFile.id = `areaFile${i}`;
         inputAreaFile.name = `areaFile${i}`;
-        inputAreaFile.required = true;
+        inputAreaFile.style.display = "none";
 
-        // Campo de Ubicación para Tomas de agua
+        const areaFileName = document.createElement("span");
+        areaFileName.id = `areaFileName${i}`;
+        areaFileName.classList.add("file-name");
+        areaFileName.textContent = "No se ha cargado ninguna foto.";
+
+        inputAreaFile.addEventListener("change", function () {
+            const fileName = this.files[0]?.name || "No se ha seleccionado ninguna foto.";
+            areaFileName.textContent = `Foto cargada: ${fileName}`;
+        });
+
+        // Campo de Tomas de Agua
         const labelWaterLocation = document.createElement("label");
         labelWaterLocation.setAttribute("for", `waterLocationImage${i}`);
         labelWaterLocation.textContent = `Tomas de agua:`;
@@ -162,17 +172,28 @@ document.getElementById("imageCount").addEventListener("input", function () {
         inputWaterLocation.placeholder = `Ingrese ubicación para la toma de agua ${i}`;
         inputWaterLocation.required = true;
 
-        // Campo de Selección de archivo para Tomas de agua
         const labelWaterFile = document.createElement("label");
+        labelWaterFile.textContent = "Tomar Foto (Tomas de agua)";
+        labelWaterFile.classList.add("custom-file-button");
         labelWaterFile.setAttribute("for", `waterFile${i}`);
-        labelWaterFile.textContent = `Tomas de agua: Seleccione archivo`;
 
         const inputWaterFile = document.createElement("input");
         inputWaterFile.type = "file";
         inputWaterFile.accept = "image/*";
+        inputWaterFile.capture = "environment";
         inputWaterFile.id = `waterFile${i}`;
         inputWaterFile.name = `waterFile${i}`;
-        inputWaterFile.required = true;
+        inputWaterFile.style.display = "none";
+
+        const waterFileName = document.createElement("span");
+        waterFileName.id = `waterFileName${i}`;
+        waterFileName.classList.add("file-name");
+        waterFileName.textContent = "No se ha cargado ninguna foto.";
+
+        inputWaterFile.addEventListener("change", function () {
+            const fileName = this.files[0]?.name || "No se ha seleccionado ninguna foto.";
+            waterFileName.textContent = `Foto cargada: ${fileName}`;
+        });
 
         // Campo de Drenaje
         const labelDrainage = document.createElement("label");
@@ -186,37 +207,87 @@ document.getElementById("imageCount").addEventListener("input", function () {
         inputDrainage.placeholder = `Ingrese drenaje para la imagen ${i}`;
         inputDrainage.required = true;
 
-        // Campo de Selección de archivo para Drenaje
         const labelDrainFile = document.createElement("label");
+        labelDrainFile.textContent = "Tomar Foto (Drenaje)";
+        labelDrainFile.classList.add("custom-file-button");
         labelDrainFile.setAttribute("for", `drainFile${i}`);
-        labelDrainFile.textContent = `Drenaje: Seleccione archivo`;
 
         const inputDrainFile = document.createElement("input");
         inputDrainFile.type = "file";
         inputDrainFile.accept = "image/*";
+        inputDrainFile.capture = "environment";
         inputDrainFile.id = `drainFile${i}`;
         inputDrainFile.name = `drainFile${i}`;
-        inputDrainFile.required = true;
+        inputDrainFile.style.display = "none";
 
+        const drainFileName = document.createElement("span");
+        drainFileName.id = `drainFileName${i}`;
+        drainFileName.classList.add("file-name");
+        drainFileName.textContent = "No se ha cargado ninguna foto.";
+
+        inputDrainFile.addEventListener("change", function () {
+            const fileName = this.files[0]?.name || "No se ha seleccionado ninguna foto.";
+            drainFileName.textContent = `Foto cargada: ${fileName}`;
+        });
+
+        // Agregar elementos al wrapper
         imageWrapper.appendChild(labelArea);
         imageWrapper.appendChild(inputArea);
         imageWrapper.appendChild(labelAreaFile);
         imageWrapper.appendChild(inputAreaFile);
+        imageWrapper.appendChild(areaFileName);
+
         imageWrapper.appendChild(labelWaterLocation);
         imageWrapper.appendChild(inputWaterLocation);
         imageWrapper.appendChild(labelWaterFile);
         imageWrapper.appendChild(inputWaterFile);
+        imageWrapper.appendChild(waterFileName);
+
         imageWrapper.appendChild(labelDrainage);
         imageWrapper.appendChild(inputDrainage);
         imageWrapper.appendChild(labelDrainFile);
         imageWrapper.appendChild(inputDrainFile);
+        imageWrapper.appendChild(drainFileName);
 
         imagesContainer.appendChild(imageWrapper);
     }
 });
 
-//// Boton Guardar//
-document.getElementById("submitBtn").addEventListener("click", async (event) => {
+
+// Foto del Tds//
+let openCameraBtn, tdsFileInput, tdsFileName;
+
+document.addEventListener("DOMContentLoaded", function() {
+    openCameraBtn = document.getElementById("openCameraBtn");
+    tdsFileInput = document.getElementById("tdsFile");
+    tdsFileName = document.getElementById("tdsFileName");
+
+    openCameraBtn.addEventListener("click", async function () {
+        tdsFileInput.click(); // Abre la cámara para tomar una foto
+    });
+
+    tdsFileInput.addEventListener("change", async function () {
+        const file = this.files[0];
+
+        if (file) {
+            const tdsPath = `tds/${file.name}`;
+            const tdsRef = storageRef(storage, tdsPath);
+            const tdsUploadTask = uploadBytesResumable(tdsRef, file);
+
+            tdsUploadTask.then(async (snapshot) => {
+                const tdsImageURL = await getDownloadURL(tdsRef);
+                tdsFileName.textContent = `Foto cargada: ${file.name}`;
+            }).catch(error => {
+                console.error("Error al subir la imagen del TDS:", error);
+                alert("Hubo un error al subir la imagen del TDS.");
+            });
+
+        } else {
+            alert("No se ha seleccionado ninguna foto del TDS.");
+        }
+    });
+
+   document.getElementById("submitBtn").addEventListener("click", async (event) => {
     event.preventDefault(); // Previene que el formulario se recargue
 
     const submitButton = document.getElementById("submitBtn");
@@ -232,17 +303,29 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
         const phone = document.getElementById("cellphone")?.value;
         const imageCount = parseInt(document.getElementById("imageCount")?.value) || 0;
 
-        if (!date || !seller || !company || !tdsValue || !contact || !phone || imageCount <= 0) {
-            let missingFields = [];
+        // Validación de campos requeridos
+        let missingFields = [];
+        
+        if (!date) missingFields.push("Fecha");
+        if (!seller) missingFields.push("Vendedor");
+        if (!company) missingFields.push("Compañía");
+        if (!tdsValue) missingFields.push("TDS");
+        if (!contact) missingFields.push("Contacto");
+        if (!phone) missingFields.push("Teléfono");
+        if (imageCount <= 0) missingFields.push("Cantidad de imágenes");
 
-            if (!date) missingFields.push("Fecha");
-            if (!seller) missingFields.push("Vendedor");
-            if (!company) missingFields.push("Compañía");
-            if (!tdsValue) missingFields.push("TDS");
-            if (!contact) missingFields.push("Contacto");
-            if (!phone) missingFields.push("Teléfono");
-            if (imageCount <= 0) missingFields.push("Cantidad de imágenes");
+        // Verificar cada input.file
+        for (let i = 1; i <= imageCount; i++) {
+            const areaFileInput = document.getElementById(`areaFile${i}`);
+            const waterFileInput = document.getElementById(`waterFile${i}`);
+            const drainFileInput = document.getElementById(`drainFile${i}`);
 
+            if (!areaFileInput?.files.length) missingFields.push(`Área imagen ${i}`);
+            if (!waterFileInput?.files.length) missingFields.push(`Ubicación agua imagen ${i}`);
+            if (!drainFileInput?.files.length) missingFields.push(`Desagüe imagen ${i}`);
+        }
+
+        if (missingFields.length > 0) {
             alert("Por favor, completa los siguientes campos: " + missingFields.join(", "));
             submitButton.disabled = false;
             return;
@@ -260,25 +343,13 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
         document.getElementById("progressContainer").style.display = "block";
 
         for (let i = 1; i <= imageCount; i++) {
-            const areaInput = document.getElementById(`areaImage${i}`);
             const areaFileInput = document.getElementById(`areaFile${i}`);
-            const waterLocationInput = document.getElementById(`waterLocationImage${i}`);
             const waterFileInput = document.getElementById(`waterFile${i}`);
-            const drainInput = document.getElementById(`drainImage${i}`);
             const drainFileInput = document.getElementById(`drainFile${i}`);
 
-            let area = areaInput?.value.trim();
-            let waterLocation = waterLocationInput?.value.trim();
-            let drain = drainInput?.value.trim();
             let areaFile = areaFileInput?.files[0];
             let waterFile = waterFileInput?.files[0];
             let drainFile = drainFileInput?.files[0];
-
-            if (!area || !waterLocation || !drain) {
-                alert(`Por favor, completa todos los campos para la imagen ${i}.`);
-                submitButton.disabled = false;
-                return;
-            }
 
             const equipmentPath = `images/img${i}`;
             const areaPath = `${equipmentPath}/0_area.png`;
@@ -293,7 +364,7 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
 
                 uploadPromises.push(areaUploadTask.then(async (snapshot) => {
                     const areaURL = await getDownloadURL(areaRef);
-                    imageData.push({ type: "area", name: area, url: areaURL });
+                    imageData.push({ type: "area", name: `Área ${i}`, url: areaURL });
                     showUploadProgress(snapshot, 'area');
                 }));
             }
@@ -304,7 +375,7 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
 
                 uploadPromises.push(waterUploadTask.then(async (snapshot) => {
                     const waterURL = await getDownloadURL(waterRef);
-                    imageData.push({ type: "waterLocation", name: waterLocation, url: waterURL });
+                    imageData.push({ type: "waterLocation", name: `Ubicación agua ${i}`, url: waterURL });
                     showUploadProgress(snapshot, 'water');
                 }));
             }
@@ -315,12 +386,23 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
 
                 uploadPromises.push(drainUploadTask.then(async (snapshot) => {
                     const drainURL = await getDownloadURL(drainRef);
-                    imageData.push({ type: "drain", name: drain, url: drainURL });
+                    imageData.push({ type: "drain", name: `Desagüe ${i}`, url: drainURL });
                     showUploadProgress(snapshot, 'drain');
                 }));
             }
 
             await Promise.all(uploadPromises);
+        }
+
+        // Guardar imagen del TDS al final
+        const tdsFile = tdsFileInput.files[0];
+        if (tdsFile) {
+            const tdsPath = `tds/${tdsFile.name}`;
+            const tdsRef = storageRef(storage, tdsPath);
+            const tdsUploadTask = uploadBytesResumable(tdsRef, tdsFile);
+
+            const tdsImageURL = await getDownloadURL(tdsRef);
+            imageData.push({ type: "tds", name: "TDS", url: tdsImageURL });
         }
 
         // Agrupar imágenes por equipos (img1, img2, etc.)
@@ -358,6 +440,9 @@ document.getElementById("submitBtn").addEventListener("click", async (event) => 
         window.location.reload();
     }
 });
+
+});
+
 
 
 
