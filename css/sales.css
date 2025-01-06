@@ -218,28 +218,28 @@ tr:hover {
     text-align: center; /* Centrar el texto */
 }
 
-/* Estilo general del contenedor de imágenes */
-#imagesContainer {
+.image-item {
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin: 20px;
-  justify-content: left;
+  flex-direction: column;
+  margin-bottom: 10px; /* Espacio entre elementos */
 }
 
-.image-wrapper {
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 16px;
-  background-color: #f9f9f9;
-  width: 300px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s ease-in-out;
+.label-container,
+.name-container,
+.image-container {
+  margin-bottom: 5px; /* Espacio entre líneas */
 }
 
-.image-wrapper:hover {
-  transform: translateY(-5px);
+.label-container label {
+  font-weight: bold;
 }
+
+.image-container img {
+  max-width: 100%;
+  height: auto;
+  cursor: pointer;
+}
+
 
 /* Estilo para las etiquetas e inputs */
 label, input, button {

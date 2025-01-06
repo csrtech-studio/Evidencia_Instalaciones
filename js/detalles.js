@@ -71,14 +71,22 @@ function displayDetails(sale) {
                 .map(type => groupImages.find(image => image.type === type))
                 .filter(Boolean); // Filtrar imágenes inexistentes
 
-            const groupHTML = orderedImages.map((image, index) => `
+                const groupHTML = orderedImages.map((image, index) => `
                 <div class="image-item">
-                    <label><strong>${getLabelInSpanish(image.type)}:</strong> ${image.name || "No especificado"}</label>
-                    <img src="${image.url}" alt="${image.type}" 
-                         style="max-width: 100%; margin-top: 5px; cursor: pointer;" 
-                         onclick="openModal('${image.url}', '${image.name || "Sin descripción"}')">
+                    <div class="label-container">
+                        <label><strong>${getLabelInSpanish(image.type)}:</strong></label>
+                    </div>
+                    <div class="name-container">
+                        ${image.name || "No especificado"}
+                    </div>
+                    <div class="image-container">
+                        <img src="${image.url}" alt="${image.type}" 
+                             style="max-width: 100%; margin-top: 5px; cursor: pointer;" 
+                             onclick="openModal('${image.url}', '${image.name || "Sin descripción"}')">
+                    </div>
                 </div>
             `).join('');
+            
 
             return `
                 <div class="image-group">
