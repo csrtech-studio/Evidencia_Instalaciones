@@ -266,6 +266,9 @@ document.addEventListener("DOMContentLoaded", function () {
         tdsFileInput.click(); // Abre la cámara para tomar una foto
     });
 
+
+    let isTdsUploaded = false; // Variable global para controlar la subida del TDS
+
     tdsFileInput.addEventListener("change", async function () {
         const file = this.files[0];
 
@@ -277,13 +280,16 @@ document.addEventListener("DOMContentLoaded", function () {
             tdsUploadTask.then(async (snapshot) => {
                 const tdsImageURL = await getDownloadURL(tdsRef);
                 tdsFileName.textContent = `Foto cargada: ${file.name}`;
+                isTdsUploaded = true;
             }).catch(error => {
                 console.error("Error al subir la imagen del TDS:", error);
                 alert("Hubo un error al subir la imagen del TDS.");
+                isTdsUploaded = false;
             });
 
         } else {
             alert("No se ha seleccionado ninguna foto del TDS.");
+            isTdsUploaded = false;
         }
     });
 
@@ -295,6 +301,7 @@ document.addEventListener("DOMContentLoaded", function () {
         uploadPercentage.innerHTML = Math.round(progress * 100) + "%";
         uploadBar.style.width = (progress * 100) + "%";
     }
+
     let progress = 0; // Porcentaje de progreso
     let progressContainer = document.getElementById('progressContainer');
     let uploadBar = document.getElementById('uploadBar');
@@ -365,14 +372,19 @@ document.addEventListener("DOMContentLoaded", function () {
                 const drainFile = document.getElementById(`drainFile${i}`)?.files?.[0];
 
                 if (!areaText || !waterLocationText || !drainText) {
-                    alert(`Por favor, completa los campos de texto para la imagen ${i}.`);
+                    alert(`Por favor, completa los campos de texto para el equipo  ${i}.`);
                     submitButton.disabled = false;
                     return;
                 }
 
                 if (!areaFile || !waterFile || !drainFile) {
-                    alert(`Por favor, sube las fotos necesarias para la imagen ${i}.`);
+                    alert(`Por favor, sube las fotos necesarias para el equipo ${i}.`);
                     submitButton.disabled = false;
+                    return;
+                }
+
+                if (!isTdsUploaded ) {
+                    alert("Por favor, Sube la foto del Tds de la Red.");
                     return;
                 }
 
@@ -476,14 +488,15 @@ document.addEventListener("DOMContentLoaded", function () {
             });
 
             alert("Formulario enviado exitosamente.");
+            clearForm();
+            window.location.reload();
         } catch (error) {
             console.error("Error al enviar formulario: ", error);
             alert("Ocurrió un error al enviar el formulario.");
         } finally {
             submitButton.disabled = false;
             uploadContainer.style.display = "none";
-            clearForm();
-            window.location.reload();
+           
         }
     });
 });
@@ -588,10 +601,9 @@ function filterSales() {
     const sellerFilter = normalizeString(document.getElementById("searchseller")?.value || "");
     const companyFilter = normalizeString(document.getElementById("searchCompany")?.value || "");
 
-
-    const queryRef = ref(db, "sales_installations"); // Cambia "sales" por el nodo de tu base de datos
+    const queryRef = ref(db, "sales_installations"); // Cambia "sales_installations" si usas otro nodo
     onValue(queryRef, (snapshot) => {
-        const tableBody = document.querySelector("#salesTable tbody"); // Asegúrate de que exista esta tabla en tu HTML
+        const tableBody = document.querySelector("#salesTable tbody"); // Asegúrate de que esta tabla exista en tu HTML
         tableBody.innerHTML = ""; // Limpiar tabla
 
         if (snapshot.exists()) {
@@ -600,10 +612,9 @@ function filterSales() {
                 const sale = child.val();
 
                 // Aplicar filtros
-                const matchesDate = dateFilter ? data.date === dateFilter : true;
+                const matchesDate = dateFilter ? sale.date === dateFilter : true;
                 const matchesSeller = sellerFilter ? normalizeString(sale.seller || "").includes(sellerFilter) : true;
                 const matchesCompany = companyFilter ? normalizeString(sale.company || "").includes(companyFilter) : true;
-
 
                 if (matchesDate && matchesSeller && matchesCompany) {
                     rows += `
@@ -616,9 +627,9 @@ function filterSales() {
                 }
             });
 
-            tableBody.innerHTML = rows || "<tr><td colspan='4'>No se encontraron registros con los filtros aplicados.</td></tr>";
+            tableBody.innerHTML = rows || "<tr><td colspan='3'>No se encontraron registros con los filtros aplicados.</td></tr>";
         } else {
-            tableBody.innerHTML = "<tr><td colspan='4'>No hay registros disponibles.</td></tr>";
+            tableBody.innerHTML = "<tr><td colspan='3'>No hay registros disponibles.</td></tr>";
         }
     });
 }
@@ -629,7 +640,6 @@ document.getElementById("clearFilter")?.addEventListener("click", () => {
     document.getElementById("searchseller").value = "";
     document.getElementById("searchCompany").value = "";
 
-    loadSalesData(); // Recargar todos los registros
+    loadSalesData(); // Recargar todos los registros sin filtros
 });
-
 
