@@ -49,22 +49,16 @@ function displayDetails(sale) {
 
     // Evaluar TDS y asignar calidad del agua
     let calidadAgua = '';
-    let estilo = ''; 
     if (sale.tdsValue) {
         if (sale.tdsValue <= 500) {
             calidadAgua = 'Buena para instalar';
-            estilo = 'color: green; font-weight: bold;';
         } else if (sale.tdsValue <= 800) {
             calidadAgua = 'Mala para instalar';
-            estilo = 'color: yellow; font-weight: bold;';
         } else {
             calidadAgua = 'No recomendable para instalar';
-            estilo = 'color: red; font-weight: bold; text-decoration: underline;';
         }
     } else {
         calidadAgua = 'No especificado';
-        estilo = 'font-style: italic;';
-        
     }
 
     // Generar HTML para las imágenes agrupadas por equipo (Equipo 1, Equipo 2, etc.)
