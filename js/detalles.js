@@ -67,9 +67,6 @@ function displayDetails(sale) {
         
     }
 
-    detailsContainer.innerHTML = `
-    <p style="${estilo}">${calidadAgua}</p>
-          `;
     // Generar HTML para las imágenes agrupadas por equipo (Equipo 1, Equipo 2, etc.)
     const imagesHTML = sale.images 
         ? Object.keys(sale.images).map((groupKey, groupIndex) => {

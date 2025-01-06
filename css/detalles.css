@@ -101,6 +101,18 @@ button:hover {
     flex-wrap: wrap;
     justify-content: flex-start;
 }
+
+.image-item {
+    flex: 1 1 calc(33.333% - 10px); /* Tres imágenes por fila */
+    box-sizing: border-box;
+}
+
+.image-item img {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
 /* Estilo de la ventana modal */
 .modal {
     display: none; /* Ocultar por defecto */
@@ -162,42 +174,4 @@ button:hover {
 
 .tds-button:hover {
     background-color: #1a5b7a;
-}
-
-.image-item {
-    display: flex;
-    flex-direction: column; /* Por defecto, apilado en dispositivos móviles */
-    gap: 5px; /* Espacio entre líneas */
-    margin-bottom: 10px; /* Separación entre bloques */
-}
-
-.label-container,
-.name-container,
-.image-container {
-    width: 100%; /* Asegura que cada línea use todo el ancho del contenedor */
-    text-align: left; /* Opcional: Alinea el texto a la izquierda */
-}
-
-.image-container img {
-    max-width: 100%;
-    height: auto;
-    cursor: pointer;
-}
-
-/* Ajuste para pantallas grandes */
-@media (min-width: 768px) {
-    .image-item {
-        flex-direction: row; /* Elementos en la misma línea en pantallas grandes */
-        align-items: center; /* Alineación vertical */
-        gap: 10px; /* Espacio entre elementos en la misma línea */
-    }
-
-    .label-container,
-    .name-container {
-        flex: 1; /* Cada contenedor usa el espacio necesario */
-    }
-
-    .image-container {
-        flex-shrink: 0; /* La imagen mantiene su tamaño original */
-    }
 }
