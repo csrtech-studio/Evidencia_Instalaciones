@@ -46,20 +46,33 @@ function getLabelInSpanish(label) {
 
 function displayDetails(sale) {
     const detailsContainer = document.getElementById('detailsContainer');
+    
+    // Verifica los datos de sale
+    console.log("Sale data:", sale);
+    console.log("TDS Value:", sale.tdsValue);
 
     // Evaluar TDS y asignar calidad del agua
     let calidadAgua = '';
-    if (sale.tdsValue) {
-        if (sale.tdsValue <= 500) {
+    let calidadColor = '';  // Variable para asignar el color en lugar de la clase CSS
+
+    let tdsValue = parseFloat(sale.tdsValue);  // Convertir a número
+
+    if (tdsValue) {
+        if (tdsValue <= 500) {
             calidadAgua = 'Buena para instalar';
-        } else if (sale.tdsValue <= 800) {
+            calidadColor = 'green';  // Color verde
+        } else if (tdsValue <= 800) {
             calidadAgua = 'Mala para instalar';
+            calidadColor = 'yellow';  // Color amarillo
         } else {
             calidadAgua = 'No recomendable para instalar';
+            calidadColor = 'red';  // Color rojo
         }
     } else {
         calidadAgua = 'No especificado';
+        calidadColor = 'gray';  // Color gris si no hay valor de TDS
     }
+
 
     // Generar HTML para las imágenes agrupadas por equipo (Equipo 1, Equipo 2, etc.)
     const imagesHTML = sale.images 
@@ -71,7 +84,7 @@ function displayDetails(sale) {
                 .map(type => groupImages.find(image => image.type === type))
                 .filter(Boolean); // Filtrar imágenes inexistentes
 
-                const groupHTML = orderedImages.map((image, index) => `
+            const groupHTML = orderedImages.map((image, index) => `
                 <div class="image-item">
                     <div class="label-container">
                         <label><strong>${getLabelInSpanish(image.type)}:</strong></label>
@@ -86,7 +99,6 @@ function displayDetails(sale) {
                     </div>
                 </div>
             `).join('');
-            
 
             return `
                 <div class="image-group">
@@ -111,7 +123,9 @@ function displayDetails(sale) {
         <h1>Compañía: ${sale.company || "No especificada"}</h1>
         <p><strong>Fecha:</strong> ${sale.date || "No especificada"}</p>
         <p><strong>Vendedor:</strong> ${sale.seller || "No especificado"}</p>
-        <p><strong>TDS:</strong> ${sale.tdsValue  || "No especificado"} PPM - ${calidadAgua} ${tdsImageButton}</p>
+        <p><strong>TDS:</strong> ${sale.tdsValue || "No especificado"} PPM - 
+            <span style="font-weight: bold; color: ${calidadColor};">${calidadAgua} ${tdsImageButton}</span>
+        </p>
         <p><strong>Contacto:</strong> ${sale.contact || "No especificado"}</p>
         <p>
             <strong>Teléfono:</strong>
@@ -126,6 +140,7 @@ function displayDetails(sale) {
         <div id="imageGallery">${imagesHTML}</div>
     `;
 }
+
 // Asegura que las funciones están disponibles globalmente
 window.openMap = openMap;
 window.openModal = openModal;

@@ -22,7 +22,7 @@ h1, h2 {
 /* Formulario */
 form {
     background-color: white;
-    padding: 8px; /* Reducir padding */
+    padding: 10px; /* Reducir padding */
     margin: 0 auto;
     width: 95%; /* Más ancho para aprovechar el espacio */
     max-width: 600px; /* Reducir max-width para hacerlos más compactos */
@@ -44,7 +44,7 @@ input[type="number"],
 select,
 input[type="file"] {
     width: calc(100% - 16px); /* Reducir padding interno */
-    padding: 6px; /* Reducir padding */
+    padding: 8px; /* Reducir padding */
     margin-bottom: 6px; /* Reducir margen */
     border: 1px solid #ddd;
     border-radius: 5px;
