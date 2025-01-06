@@ -73,7 +73,7 @@ function displayDetails(sale) {
 
             const groupHTML = orderedImages.map((image, index) => `
                 <div class="image-item">
-                    <label><strong>${getLabelInSpanish(image.type)}:</strong> ${image.name || "No especificado"}</label><br><br><br>
+                    <label><strong>${getLabelInSpanish(image.type)}:</strong> ${image.name || "No especificado"}</label>
                     <img src="${image.url}" alt="${image.type}" 
                          style="max-width: 100%; margin-top: 5px; cursor: pointer;" 
                          onclick="openModal('${image.url}', '${image.name || "Sin descripción"}')">
