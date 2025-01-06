@@ -101,18 +101,6 @@ button:hover {
     flex-wrap: wrap;
     justify-content: flex-start;
 }
-
-.image-item {
-    flex: 1 1 calc(33.333% - 10px); /* Tres imágenes por fila */
-    box-sizing: border-box;
-}
-
-.image-item img {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
 /* Estilo de la ventana modal */
 .modal {
     display: none; /* Ocultar por defecto */

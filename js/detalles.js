@@ -46,20 +46,33 @@ function getLabelInSpanish(label) {
 
 function displayDetails(sale) {
     const detailsContainer = document.getElementById('detailsContainer');
-
-    // Evaluar TDS y asignar calidad del agua
+    
+    // Evaluar TDS y asignar calidad del agua con estilo dinámico
     let calidadAgua = '';
+    let estilo = ''; // Variable para los estilos CSS
+
     if (sale.tdsValue) {
         if (sale.tdsValue <= 500) {
             calidadAgua = 'Buena para instalar';
+            estilo = 'color: green; font-weight: bold;';
         } else if (sale.tdsValue <= 800) {
-            calidadAgua = 'Mala para instalar';
+            calidadAgua = 'Se puede instalar con las recomendaciones adecuadas';
+            estilo = 'color: yellow; font-weight: bold;';
         } else {
             calidadAgua = 'No recomendable para instalar';
+            estilo = 'color: red; font-weight: bold; text-decoration: underline;';
         }
     } else {
         calidadAgua = 'No especificado';
+        estilo = 'font-style: italic;';
     }
+
+    // Mostrar los detalles con estilos
+    detailsContainer.innerHTML = `
+        <p style="${estilo}">${calidadAgua}</p>
+    `;
+}
+
 
     // Generar HTML para las imágenes agrupadas por equipo (Equipo 1, Equipo 2, etc.)
     const imagesHTML = sale.images 
