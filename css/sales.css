@@ -218,44 +218,28 @@ tr:hover {
     text-align: center; /* Centrar el texto */
 }
 
-.image-item {
+/* Estilo general del contenedor de imágenes */
+#imagesContainer {
   display: flex;
-  flex-direction: column; /* Por defecto, apilado en dispositivos móviles */
-  gap: 5px; /* Espacio entre líneas */
-  margin-bottom: 10px; /* Separación entre bloques */
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 20px;
+  justify-content: left;
 }
 
-.label-container,
-.name-container,
-.image-container {
-  width: 100%; /* Asegura que cada línea use todo el ancho del contenedor */
-  text-align: left; /* Opcional: Alinea el texto a la izquierda */
+.image-wrapper {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  width: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
 }
 
-.image-container img {
-  max-width: 100%;
-  height: auto;
-  cursor: pointer;
+.image-wrapper:hover {
+  transform: translateY(-5px);
 }
-
-/* Ajuste para pantallas grandes */
-@media (min-width: 768px) {
-  .image-item {
-      flex-direction: row; /* Elementos en la misma línea en pantallas grandes */
-      align-items: center; /* Alineación vertical */
-      gap: 10px; /* Espacio entre elementos en la misma línea */
-  }
-
-  .label-container,
-  .name-container {
-      flex: 1; /* Cada contenedor usa el espacio necesario */
-  }
-
-  .image-container {
-      flex-shrink: 0; /* La imagen mantiene su tamaño original */
-  }
-}
-
 
 /* Estilo para las etiquetas e inputs */
 label, input, button {
