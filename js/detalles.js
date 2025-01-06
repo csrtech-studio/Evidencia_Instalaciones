@@ -36,7 +36,7 @@ function getLabelInSpanish(label) {
         'seller': 'Vendedor',
         'tdsValue': 'TDS',
         'area': 'Área',
-        'waterLocation': 'Tomas de Agua',
+        'water': 'Tomas de Agua',
         'drain': 'Desagüe',
         // Agrega más traducciones según sea necesario
     };
@@ -67,7 +67,7 @@ function displayDetails(sale) {
             const groupImages = sale.images[groupKey];
 
             // Reorganizar las imágenes según el tipo deseado
-            const orderedImages = ['area', 'waterLocation', 'drain']
+            const orderedImages = ['area', 'water', 'drain']
                 .map(type => groupImages.find(image => image.type === type))
                 .filter(Boolean); // Filtrar imágenes inexistentes
 
@@ -93,7 +93,7 @@ function displayDetails(sale) {
 
     // Botón para abrir imagen específica de TDS
     const tdsImageButton = `
-        <button class="tds-button" onclick="openModal('${sale.images['img2'][0]?.url}', '${sale.images['img2'][0]?.name || "TDS"}')">
+        <button class="tds-button" onclick="openModal('${sale.tds?.url}', '${sale.tds?.name || "TDS"}')">
             Ver TDS
         </button>
     `;
@@ -103,7 +103,7 @@ function displayDetails(sale) {
         <h1>Compañía: ${sale.company || "No especificada"}</h1>
         <p><strong>Fecha:</strong> ${sale.date || "No especificada"}</p>
         <p><strong>Vendedor:</strong> ${sale.seller || "No especificado"}</p>
-        <p><strong>TDS:</strong> ${sale.tdsValue || "No especificado"} - ${calidadAgua} ${tdsImageButton}</p>
+        <p><strong>TDS:</strong> ${sale.tdsValue  || "No especificado"} PPM - ${calidadAgua} ${tdsImageButton}</p>
         <p><strong>Contacto:</strong> ${sale.contact || "No especificado"}</p>
         <p>
             <strong>Teléfono:</strong>

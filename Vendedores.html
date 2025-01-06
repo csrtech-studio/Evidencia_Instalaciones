@@ -5,8 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Instalaciones</title>
-    <link rel="icon" href="/Evidencia_Instalaciones/icons/icon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="/Evidencia_Instalaciones/icons/icon-192x192.png">
     <link rel="stylesheet" href="css/sales.css">
 </head>
 
@@ -50,12 +48,16 @@
 
         <button type="button" id="locationButton" style="margin-top: 10px;">Guardar Ubicación</button>
 
-        <!-- Barra de progreso (inicialmente oculta) -->
-        <div id="progressContainer" class="progress" style="display: none;">
-            <div id="progressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-            </div>
+        <div id="progressContainer" data-complete="true">
+            <div id="uploadBar"></div>
+            <div id="uploadPercentage">0%</div>
+          </div>
+          
+        
         </div>
+        <button type="button" id="submitBtn">Guardar</button>
+    </form>
+</section>
 
         <button type="submit" id="submitBtn">Guardar</button>
     </form>

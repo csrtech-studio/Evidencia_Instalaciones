@@ -257,7 +257,7 @@ document.getElementById("imageCount").addEventListener("input", function () {
 // Foto del Tds//
 let openCameraBtn, tdsFileInput, tdsFileName;
 
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     openCameraBtn = document.getElementById("openCameraBtn");
     tdsFileInput = document.getElementById("tdsFile");
     tdsFileName = document.getElementById("tdsFileName");
@@ -287,183 +287,206 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-   document.getElementById("submitBtn").addEventListener("click", async (event) => {
-    event.preventDefault(); // Previene que el formulario se recargue
-
-    const submitButton = document.getElementById("submitBtn");
-    submitButton.disabled = true;
-
-    try {
-        // Obtener datos del formulario
-        const date = document.getElementById("date")?.value;
-        const seller = document.getElementById("seller")?.value;
-        const company = document.getElementById("company")?.value;
-        const tdsValue = document.getElementById("tds")?.value;
-        const contact = document.getElementById("contact")?.value;
-        const phone = document.getElementById("cellphone")?.value;
-        const imageCount = parseInt(document.getElementById("imageCount")?.value) || 0;
-
-        // Validación de campos requeridos
-        let missingFields = [];
-        
-        if (!date) missingFields.push("Fecha");
-        if (!seller) missingFields.push("Vendedor");
-        if (!company) missingFields.push("Compañía");
-        if (!tdsValue) missingFields.push("TDS");
-        if (!contact) missingFields.push("Contacto");
-        if (!phone) missingFields.push("Teléfono");
-        if (imageCount <= 0) missingFields.push("Cantidad de imágenes");
-
-        // Verificar cada input.file
-        for (let i = 1; i <= imageCount; i++) {
-            const areaFileInput = document.getElementById(`areaFile${i}`);
-            const waterFileInput = document.getElementById(`waterFile${i}`);
-            const drainFileInput = document.getElementById(`drainFile${i}`);
-
-            if (!areaFileInput?.files.length) missingFields.push(`Área imagen ${i}`);
-            if (!waterFileInput?.files.length) missingFields.push(`Ubicación agua imagen ${i}`);
-            if (!drainFileInput?.files.length) missingFields.push(`Desagüe imagen ${i}`);
-        }
-
-        if (missingFields.length > 0) {
-            alert("Por favor, completa los siguientes campos: " + missingFields.join(", "));
-            submitButton.disabled = false;
-            return;
-        }
-
-        if (!userLocation) {
-            alert("Por favor, guarda la ubicación antes de enviar el formulario.");
-            submitButton.disabled = false;
-            return;
-        }
-
-        const imageData = [];
+    // Función personalizada para mostrar el progreso
+    function showUploadProgress(progress) {
         const uploadPercentage = document.getElementById("uploadPercentage");
+        const uploadBar = document.getElementById("uploadBar");
 
-        document.getElementById("progressContainer").style.display = "block";
+        uploadPercentage.innerHTML = Math.round(progress * 100) + "%";
+        uploadBar.style.width = (progress * 100) + "%";
+    }
+    let progress = 0; // Porcentaje de progreso
+    let progressContainer = document.getElementById('progressContainer');
+    let uploadBar = document.getElementById('uploadBar');
+    let uploadPercentage = document.getElementById('uploadPercentage');
 
-        for (let i = 1; i <= imageCount; i++) {
-            const areaFileInput = document.getElementById(`areaFile${i}`);
-            const waterFileInput = document.getElementById(`waterFile${i}`);
-            const drainFileInput = document.getElementById(`drainFile${i}`);
+    function updateProgress() {
+        uploadBar.style.width = progress + '%';
+        uploadPercentage.textContent = progress + '%';
 
-            let areaFile = areaFileInput?.files[0];
-            let waterFile = waterFileInput?.files[0];
-            let drainFile = drainFileInput?.files[0];
+        if (progress === 100) {
+            progressContainer.setAttribute('data-complete', 'true');
+        }
+    }
 
-            const equipmentPath = `images/img${i}`;
-            const areaPath = `${equipmentPath}/0_area.png`;
-            const waterPath = `${equipmentPath}/1_water.png`;
-            const drainPath = `${equipmentPath}/2_drain.png`;
+
+
+
+    // Botón de guardar
+    document.getElementById("submitBtn").addEventListener("click", async (event) => {
+        event.preventDefault(); // Previene que el formulario se recargue
+
+        const submitButton = document.getElementById("submitBtn");
+        const uploadContainer = document.getElementById("progressContainer");
+        const uploadPercentage = document.getElementById("uploadPercentage");
+        submitButton.disabled = true;
+        uploadContainer.style.display = "block";
+        uploadPercentage.innerHTML = "0%";
+
+        try {
+            const date = document.getElementById("date")?.value;
+            const seller = document.getElementById("seller")?.value;
+            const company = document.getElementById("company")?.value;
+            const tdsValue = document.getElementById("tds")?.value;
+            const contact = document.getElementById("contact")?.value;
+            const phone = document.getElementById("cellphone")?.value;
+            const imageCount = parseInt(document.getElementById("imageCount")?.value) || 0;
+
+            if (!date || !seller || !company || !tdsValue || !contact || !phone || imageCount <= 0) {
+                alert("Por favor, completa todos los campos requeridos.");
+                submitButton.disabled = false;
+                return;
+            }
+
+            // Gestiona tdsImageURL adecuadamente
+            let tdsImageURL;
+            if (tdsFileInput.files[0]) {
+                const tdsFile = tdsFileInput.files[0];
+                const tdsPath = `tds/${tdsFile.name}`;
+                const tdsRef = storageRef(storage, tdsPath);
+                const tdsUploadTask = uploadBytesResumable(tdsRef, tdsFile);
+
+                tdsImageURL = await getDownloadURL(tdsRef);
+            }
+
+            const totalFiles = imageCount * 3; // 3 archivos por equipo
+            let uploadedFiles = 0;
 
             const uploadPromises = [];
+            const imagesData = {};
 
-            if (areaFile) {
-                const areaRef = storageRef(storage, areaPath);
-                const areaUploadTask = uploadBytesResumable(areaRef, areaFile);
+            for (let i = 1; i <= imageCount; i++) {
+                const areaText = document.getElementById(`areaImage${i}`)?.value;
+                const waterLocationText = document.getElementById(`waterLocationImage${i}`)?.value;
+                const drainText = document.getElementById(`drainImage${i}`)?.value;
 
-                uploadPromises.push(areaUploadTask.then(async (snapshot) => {
-                    const areaURL = await getDownloadURL(areaRef);
-                    imageData.push({ type: "area", name: `Área ${i}`, url: areaURL });
-                    showUploadProgress(snapshot, 'area');
-                }));
-            }
+                const areaFile = document.getElementById(`areaFile${i}`)?.files?.[0];
+                const waterFile = document.getElementById(`waterFile${i}`)?.files?.[0];
+                const drainFile = document.getElementById(`drainFile${i}`)?.files?.[0];
 
-            if (waterFile) {
-                const waterRef = storageRef(storage, waterPath);
-                const waterUploadTask = uploadBytesResumable(waterRef, waterFile);
+                if (!areaText || !waterLocationText || !drainText) {
+                    alert(`Por favor, completa los campos de texto para la imagen ${i}.`);
+                    submitButton.disabled = false;
+                    return;
+                }
 
-                uploadPromises.push(waterUploadTask.then(async (snapshot) => {
-                    const waterURL = await getDownloadURL(waterRef);
-                    imageData.push({ type: "waterLocation", name: `Ubicación agua ${i}`, url: waterURL });
-                    showUploadProgress(snapshot, 'water');
-                }));
-            }
+                if (!areaFile || !waterFile || !drainFile) {
+                    alert(`Por favor, sube las fotos necesarias para la imagen ${i}.`);
+                    submitButton.disabled = false;
+                    return;
+                }
 
-            if (drainFile) {
-                const drainRef = storageRef(storage, drainPath);
-                const drainUploadTask = uploadBytesResumable(drainRef, drainFile);
+                imagesData[`img${i}`] = {};
+                const uniqueID = `${date.replace(/-/g, '')}_${new Date().toISOString().replace(/[-T:\.Z]/g, '')}_${i}`;
 
-                uploadPromises.push(drainUploadTask.then(async (snapshot) => {
-                    const drainURL = await getDownloadURL(drainRef);
-                    imageData.push({ type: "drain", name: `Desagüe ${i}`, url: drainURL });
-                    showUploadProgress(snapshot, 'drain');
-                }));
+                // Área
+                if (areaFile) {
+                    const areaPath = `images/area/${uniqueID}.jpg`;
+                    const areaRef = storageRef(storage, areaPath);
+                    const areaUploadTask = uploadBytesResumable(areaRef, areaFile);
+
+                    uploadPromises.push(
+                        new Promise((resolve, reject) => {
+                            areaUploadTask.on(
+                                "state_changed",
+                                (snapshot) => {
+                                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                    uploadedFiles += progress / totalFiles;
+                                    showUploadProgress(uploadedFiles);
+                                },
+                                (error) => reject(`Error al subir área ${i}: ${error}`),
+                                async () => {
+                                    const areaUrl = await getDownloadURL(areaRef);
+                                    imagesData[`img${i}`][0] = { name: areaText, type: "area", url: areaUrl };
+                                    resolve();
+                                }
+                            );
+                        })
+                    );
+                }
+
+                // Tomas de agua
+                if (waterFile) {
+                    const waterPath = `images/water/${uniqueID}.jpg`;
+                    const waterRef = storageRef(storage, waterPath);
+                    const waterUploadTask = uploadBytesResumable(waterRef, waterFile);
+
+                    uploadPromises.push(
+                        new Promise((resolve, reject) => {
+                            waterUploadTask.on(
+                                "state_changed",
+                                (snapshot) => {
+                                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                    uploadedFiles += progress / totalFiles;
+                                    showUploadProgress(uploadedFiles);
+                                },
+                                (error) => reject(`Error al subir toma de agua ${i}: ${error}`),
+                                async () => {
+                                    const waterUrl = await getDownloadURL(waterRef);
+                                    imagesData[`img${i}`][1] = { name: waterLocationText, type: "water", url: waterUrl };
+                                    resolve();
+                                }
+                            );
+                        })
+                    );
+                }
+
+                // Drenaje
+                if (drainFile) {
+                    const drainPath = `images/drain/${uniqueID}.jpg`;
+                    const drainRef = storageRef(storage, drainPath);
+                    const drainUploadTask = uploadBytesResumable(drainRef, drainFile);
+
+                    uploadPromises.push(
+                        new Promise((resolve, reject) => {
+                            drainUploadTask.on(
+                                "state_changed",
+                                (snapshot) => {
+                                    const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                                    uploadedFiles += progress / totalFiles;
+                                    showUploadProgress(uploadedFiles);
+                                },
+                                (error) => reject(`Error al subir drenaje ${i}: ${error}`),
+                                async () => {
+                                    const drainUrl = await getDownloadURL(drainRef);
+                                    imagesData[`img${i}`][2] = { name: drainText, type: "drain", url: drainUrl };
+                                    resolve();
+                                }
+                            );
+                        })
+                    );
+                }
             }
 
             await Promise.all(uploadPromises);
+
+            await saveImageData({
+                date,
+                seller,
+                company,
+                tdsValue,
+                contact,
+                phone,
+                location: userLocation,
+                tds: {
+                    name: tdsFileInput.files[0]?.name || "Sin nombre",
+                    url: tdsImageURL,
+                },
+                images: imagesData,
+            });
+
+            alert("Formulario enviado exitosamente.");
+        } catch (error) {
+            console.error("Error al enviar formulario: ", error);
+            alert("Ocurrió un error al enviar el formulario.");
+        } finally {
+            submitButton.disabled = false;
+            uploadContainer.style.display = "none";
+            clearForm();
+            window.location.reload();
         }
-
-        // Guardar imagen del TDS al final
-        const tdsFile = tdsFileInput.files[0];
-        if (tdsFile) {
-            const tdsPath = `tds/${tdsFile.name}`;
-            const tdsRef = storageRef(storage, tdsPath);
-            const tdsUploadTask = uploadBytesResumable(tdsRef, tdsFile);
-
-            const tdsImageURL = await getDownloadURL(tdsRef);
-            imageData.push({ type: "tds", name: "TDS", url: tdsImageURL });
-        }
-
-        // Agrupar imágenes por equipos (img1, img2, etc.)
-        const groupedImages = imageData.reduce((acc, image, index) => {
-            const equipmentIndex = Math.floor(index / 3) + 1; // Agrupa cada 3 imágenes
-            if (!acc[`img${equipmentIndex}`]) {
-                acc[`img${equipmentIndex}`] = [];
-            }
-            acc[`img${equipmentIndex}`].push(image);
-            return acc;
-        }, {});
-
-        // Guardar en Realtime Database
-        await saveImageData({
-            date,
-            seller,
-            company,
-            tdsValue,
-            contact,
-            phone,
-            location: userLocation,
-            images: groupedImages,
-        });
-
-        alert("Formulario enviado exitosamente.");
-    } catch (error) {
-        console.error("Error al enviar formulario: ", error);
-        alert("Ocurrió un error al enviar el formulario.");
-    } finally {
-        submitButton.disabled = false;
-        document.getElementById("progressContainer").style.display = "none";
-        clearForm(); // Borra todos los campos del formulario y la ubicación
-
-        // Redireccionar a la misma página para limpiar campos y mantener la fecha
-        window.location.reload();
-    }
+    });
 });
-
-});
-
-
-
-
-const showUploadProgress = (percentage) => {
-    const uploadPercentage = document.getElementById("uploadPercentage");
-    if (uploadPercentage) {
-        uploadPercentage.innerHTML = `${percentage.toFixed(2)}%`;
-        if (percentage >= 100) {
-            setTimeout(() => {
-                uploadPercentage.innerHTML = "Registro guardado correctamente.";
-                setTimeout(() => {
-                    submitButton.disabled = false;
-                    uploadContainer.style.display = 'none';
-                    clearForm(); // Refresca la página después de ocultar el contenedor
-                }, 2000); // Mostrar el mensaje durante 2 segundos
-            }, 2000); // Esperar 2 segundos antes de mostrar el mensaje
-        }
-    }
-};
-
-
 
 // Función para guardar datos en Realtime Database
 async function saveImageData(formData) {
