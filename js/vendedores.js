@@ -157,7 +157,7 @@ document.getElementById("imageCount").addEventListener("input", function () {
 
         inputAreaFile.addEventListener("change", function () {
             const fileName = this.files[0]?.name || "No se ha seleccionado ninguna foto.";
-            areaFileName.textContent = `Foto cargada: ${fileName}`;
+            areaFileName.textContent = `Foto cargada: Area ${i}`;
         });
 
         // Campo de Tomas de Agua
@@ -192,7 +192,7 @@ document.getElementById("imageCount").addEventListener("input", function () {
 
         inputWaterFile.addEventListener("change", function () {
             const fileName = this.files[0]?.name || "No se ha seleccionado ninguna foto.";
-            waterFileName.textContent = `Foto cargada: ${fileName}`;
+            waterFileName.textContent = `Foto cargada: Tomas de Agua ${i}`;
         });
 
         // Campo de Drenaje
@@ -227,7 +227,7 @@ document.getElementById("imageCount").addEventListener("input", function () {
 
         inputDrainFile.addEventListener("change", function () {
             const fileName = this.files[0]?.name || "No se ha seleccionado ninguna foto.";
-            drainFileName.textContent = `Foto cargada: ${fileName}`;
+            drainFileName.textContent = `Foto cargada: Drenaje ${i}`;
         });
 
         // Agregar elementos al wrapper
@@ -273,13 +273,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const file = this.files[0];
 
         if (file) {
-            const tdsPath = `tds/${file.name}`;
+            // Generar nombre de archivo con la fecha actual
+            const currentDate = new Date();
+            const formattedDate = currentDate.toISOString().split('T')[0]; // Formato: YYYY-MM-DD
+            const newFileName = `Tds-${formattedDate}.jpg`;
+
+            const tdsPath = `tds/${newFileName}`;
             const tdsRef = storageRef(storage, tdsPath);
             const tdsUploadTask = uploadBytesResumable(tdsRef, file);
 
             tdsUploadTask.then(async (snapshot) => {
                 const tdsImageURL = await getDownloadURL(tdsRef);
-                tdsFileName.textContent = `Foto cargada: ${file.name}`;
+                tdsFileName.textContent = `Foto cargada: ${newFileName}`;
                 isTdsUploaded = true;
             }).catch(error => {
                 console.error("Error al subir la imagen del TDS:", error);

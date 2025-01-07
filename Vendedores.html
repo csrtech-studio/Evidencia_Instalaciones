@@ -30,7 +30,7 @@
         <input type="text" id="contact" name="contact" placeholder="Nombre de contacto" required><br>
 
         <label for="cellphone">Celular:</label>
-        <input type="tel" id="cellphone" name="cellphone" placeholder="Número de celular" required><br>
+        <input type="tel" id="cellphone" name="cellphone" placeholder="Número de celular"  pattern="\d{3}-\d{3}-\d{2}-\d{2}" title="El número debe tener 10 digitos" required><br>
 
         <label for="tds">TDS de Red:</label>
         <div style="display: flex; align-items: center;">
@@ -38,9 +38,8 @@
             <button type="button" id="openCameraBtn">Tomar Foto</button>
             <input type="file" accept="image/*" capture="environment" id="tdsFile" name="tdsFile" style="display: none;" required>
         </div>
-         <span id="tdsFileName" class="file-name">No se ha cargado ninguna foto.</span>
-
-
+         <span id="tdsFileName" class="file-name">No se ha cargado ninguna foto.</span><br>
+        
         <label for="imageCount">Cantidad de Equipos a Instalar:</label>
         <input type="number" id="imageCount" name="imageCount" min="1" max="50" placeholder="Cantidad" required><br>
 
