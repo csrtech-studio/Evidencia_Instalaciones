@@ -134,7 +134,7 @@ document.getElementById("imageCount").addEventListener("input", function () {
         inputArea.type = "text";
         inputArea.id = `areaImage${i}`;
         inputArea.name = `areaImage${i}`;
-        inputArea.placeholder = `Ingrese área para la imagen ${i}`;
+        inputArea.placeholder = `Ingrese área ${i}`;
         inputArea.required = true;
 
         const labelAreaFile = document.createElement("label");
@@ -204,7 +204,7 @@ document.getElementById("imageCount").addEventListener("input", function () {
         inputDrainage.type = "text";
         inputDrainage.id = `drainImage${i}`;
         inputDrainage.name = `drainImage${i}`;
-        inputDrainage.placeholder = `Ingrese drenaje para la imagen ${i}`;
+        inputDrainage.placeholder = `Ingrese drenaje ${i}`;
         inputDrainage.required = true;
 
         const labelDrainFile = document.createElement("label");
@@ -601,15 +601,16 @@ function filterSales() {
     const sellerFilter = normalizeString(document.getElementById("searchseller")?.value || "");
     const companyFilter = normalizeString(document.getElementById("searchCompany")?.value || "");
 
-    const queryRef = ref(db, "sales_installations"); // Cambia "sales_installations" si usas otro nodo
+    const queryRef = ref(db, "sales_installations");
     onValue(queryRef, (snapshot) => {
-        const tableBody = document.querySelector("#salesTable tbody"); // Asegúrate de que esta tabla exista en tu HTML
+        const tableBody = document.querySelector("#salesTable tbody");
         tableBody.innerHTML = ""; // Limpiar tabla
 
         if (snapshot.exists()) {
             let rows = "";
             snapshot.forEach((child) => {
                 const sale = child.val();
+                const id = child.key; // Obtener el UID del registro
 
                 // Aplicar filtros
                 const matchesDate = dateFilter ? sale.date === dateFilter : true;
@@ -622,17 +623,19 @@ function filterSales() {
                             <td>${sale.date || "N/A"}</td>
                             <td>${sale.seller || "N/A"}</td>
                             <td>${sale.company || "N/A"}</td>
+                            <td><button data-uid="${id}">Ver</button></td>
                         </tr>
                     `;
                 }
             });
 
-            tableBody.innerHTML = rows || "<tr><td colspan='3'>No se encontraron registros con los filtros aplicados.</td></tr>";
+            tableBody.innerHTML = rows || "<tr><td colspan='4'>No se encontraron registros con los filtros aplicados.</td></tr>";
         } else {
-            tableBody.innerHTML = "<tr><td colspan='3'>No hay registros disponibles.</td></tr>";
+            tableBody.innerHTML = "<tr><td colspan='4'>No hay registros disponibles.</td></tr>";
         }
     });
 }
+
 
 // Limpiar filtros
 document.getElementById("clearFilter")?.addEventListener("click", () => {

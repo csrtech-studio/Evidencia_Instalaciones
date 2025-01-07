@@ -16,10 +16,12 @@
 
         <label for="seller">Vendedor:</label>
         <select id="seller" name="seller" required>
+            <option value="" disabled selected>Seleccione...</option>
             <option value="Jonahan Lopez">Jonahan Lopez</option>
             <option value="Israel Aguilera">Israel Aguilera</option>
             <option value="Luis Lopez">Luis Lopez</option>
         </select><br><br>
+        
 
         <label for="company">Empresa:</label>
         <input type="text" id="company" name="company" placeholder="Nombre de la empresa" required><br>
@@ -72,10 +74,8 @@
                 <input type="text" id="searchCompany" class="form-control form-control-sm" placeholder="Empresa">
             </div>
 
-            <div class="col-6 col-md-3">
-                <button id="searchBtn" class="btn btn-success btn-sm w-100">Buscar</button>
-            </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-3" style="display: flex; align-items: center;">
+                <button id="searchBtn" class="btn btn-success btn-sm w-100">Buscar</button>&nbsp; &nbsp;&nbsp; &nbsp;&nbsp; &nbsp;
                 <button id="clearFilter" class="btn btn-secondary btn-sm w-100">Borrar</button>
             </div>
         </div>

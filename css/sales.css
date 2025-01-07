@@ -37,19 +37,22 @@ label {
     color: #2c3e50;
 }
 
-input[type="text"],
-input[type="tel"],
-input[type="date"],
-input[type="number"],
-select,
-input[type="file"] {
-    width: calc(100% - 16px); /* Reducir padding interno */
-    padding: 8px; /* Reducir padding */
-    margin-bottom: 6px; /* Reducir margen */
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
-    background-color: #f9f9f9;
+form input, form select{
+  padding: 0.8rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+input[type="text"]{
+  padding: 0.8rem;
+  font-size: 1.1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 input[type="text"]:focus,
@@ -66,9 +69,9 @@ input[type="file"]:focus {
 /* Botones */
 button[type="button"],
 #submitBtn {
-    padding: 8px 16px; /* Reducir padding */
+    padding: 14px 16px; /* Reducir padding */
     border-radius: 5px;
-    font-size: 14px; /* Reducir tamaño de fuente */
+    font-size: 16px; /* Reducir tamaño de fuente */
     cursor: pointer;
     width: 100%;
     transition: background-color 0.3s;
@@ -136,6 +139,7 @@ tr:hover {
   
   #filters-section button {
     background-color: #ff6f61;
+    width: 40%;
     color: white;
     border: none;
     cursor: pointer;
