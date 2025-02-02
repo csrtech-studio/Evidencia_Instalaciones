@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="auth.js"></script>
+</head>
+
+<body>
+    <header>
+        <h1>Panel de Administración</h1>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="button-group">
+                <button class="admin-btn" onclick="window.location.href='tecnicos.html'">Técnicos</button>
+                <button class="admin-btn" onclick="window.location.href='index.html'">Instaladores</button>
+                <button class="admin-btn" onclick="window.location.href='vendedores.html'">Vendedores</button>
+                <button class="admin-btn" onclick="window.location.href='agregar-usuario.html'">Agregar Usuario</button>
+                <button class="admin-btn" onclick="logout()">Cerrar Sesión</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Administración</p>
+    </footer>
+
+</body>
+
+</html>

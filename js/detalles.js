@@ -8,8 +8,8 @@ const db = getDatabase(app);
 
 // Obtener el UID de la URL
 const urlParams = new URLSearchParams(window.location.search);
-const uid = urlParams.get('uid');
-console.log('UID parameter:', uid);
+const uid = urlParams.get('id');
+console.log('ID parameter:', uid);
 
 if (uid) {
     const saleRef = ref(db, `sales_installations/${uid}`);
@@ -33,7 +33,7 @@ function getLabelInSpanish(label) {
         'contact': 'Contacto',
         'date': 'Fecha',
         'phone': 'Teléfono',
-        'seller': 'Vendedor',
+        'technician': 'Vendedor',
         'tdsValue': 'TDS',
         'area': 'Área',
         'water': 'Tomas de Agua',
@@ -122,7 +122,7 @@ function displayDetails(sale) {
     detailsContainer.innerHTML = `
         <h1>Compañía: ${sale.company || "No especificada"}</h1>
         <p><strong>Fecha:</strong> ${sale.date || "No especificada"}</p>
-        <p><strong>Vendedor:</strong> ${sale.seller || "No especificado"}</p>
+        <p><strong>Vendedor:</strong> ${sale.technician || "No especificado"}</p>
         <p><strong>TDS:</strong> ${sale.tdsValue || "No especificado"} PPM - 
             <span style="font-weight: bold; color: ${calidadColor};">${calidadAgua} ${tdsImageButton}</span>
         </p>

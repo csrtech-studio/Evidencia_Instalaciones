@@ -2,16 +2,32 @@ import { firebaseConfig } from './firebaseConfig.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-app.js";
 import { getDatabase, ref, onValue, push, get } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-storage.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-auth.js";
+import { checkAuthState, logout } from "./auth.js";
+import { checkAuthStateAndRole } from "./auth.js";
+
+
+checkAuthStateAndRole("Vendedor");
 
 let userLocation = null;
-
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const storage = getStorage(app);
-const salesRef = ref(db, 'sales_installations');
+const auth = getAuth(app);
+const salesRef = ref(db, 'sales_installations')
 
+// Verificar el estado de autenticación y mostrar el botón de cerrar sesión
+document.addEventListener("DOMContentLoaded", () => {
+    checkAuthState(); // Verificar si el usuario está logueado
+
+    // Manejar el clic en el botón de cerrar sesión
+    const logoutButton = document.getElementById("logoutButton");
+    if (logoutButton) {
+        logoutButton.addEventListener("click", logout); // Llama a la función de logout cuando se haga clic
+    }
+});
 
 // Inicializar fecha en el formulario
 document.addEventListener("DOMContentLoaded", function () {
@@ -32,6 +48,69 @@ document.addEventListener("DOMContentLoaded", function () {
     // Aplicar filtro automáticamente al cargar la página
     filterSales();
 
+});
+
+// Cargar técnicos desde Firebase y agregar al combobox
+document.addEventListener("DOMContentLoaded", () => {
+    const technicianSelect = document.getElementById("technician"); // Obtener el combobox
+
+    if (technicianSelect) {
+        // Verificar si hay un usuario autenticado
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                const currentUserId = user.uid; // Obtener ID del usuario autenticado
+                const currentTechnicianName = user.displayName; // Obtener el nombre del técnico desde Firebase Authentication
+
+                const usersRef = ref(db, "usuarios"); // Ruta a los usuarios en Firebase
+
+                // Obtener los datos de usuarios desde Firebase
+                onValue(usersRef, (snapshot) => {
+                    console.log(snapshot.val()); // Verifica los datos obtenidos
+
+                    technicianSelect.innerHTML = ""; // Limpiar el combobox antes de llenarlo
+
+                    if (snapshot.exists()) {
+                        let technicianFound = false; // Bandera para verificar si encontramos el técnico
+
+                        snapshot.forEach((childSnapshot) => {
+                            const user = childSnapshot.val(); // Obtener los datos de cada usuario
+
+                            // Verificar si el ID del usuario coincide con el usuario autenticado
+                            if (user.uid === currentUserId) {
+                                const technicianName = user.technician; // Extraer el nombre del técnico
+
+                                if (technicianName) {
+                                    // Crear una opción para el técnico logueado
+                                    const option = document.createElement("option");
+                                    option.value = technicianName; // Usar el nombre del técnico como valor
+                                    option.textContent = technicianName; // Mostrar el nombre del técnico
+                                    technicianSelect.appendChild(option); // Añadir la opción al combobox
+                                    technicianSelect.value = technicianName; // Establecer como seleccionado el técnico logueado
+                                    technicianFound = true; // Marcar que encontramos al técnico
+                                }
+                            }
+                        });
+
+                        // Si no se encuentra el técnico, agregar una opción por defecto
+                        if (!technicianFound) {
+                            const option = document.createElement("option");
+                            option.textContent = "No se encontró el técnico";
+                            technicianSelect.appendChild(option);
+                        }
+                    } else {
+                        const option = document.createElement("option");
+                        option.textContent = "No hay técnicos disponibles";
+                        technicianSelect.appendChild(option);
+                    }
+                });
+            } else {
+                // Si no hay un usuario autenticado, agregar una opción por defecto
+                const option = document.createElement("option");
+                option.textContent = "No has iniciado sesión";
+                technicianSelect.appendChild(option);
+            }
+        });
+    }
 });
 
 
@@ -337,14 +416,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         try {
             const date = document.getElementById("date")?.value;
-            const seller = document.getElementById("seller")?.value;
+            const technician = document.getElementById("technician")?.value;
             const company = document.getElementById("company")?.value;
             const tdsValue = document.getElementById("tds")?.value;
             const contact = document.getElementById("contact")?.value;
             const phone = document.getElementById("cellphone")?.value;
             const imageCount = parseInt(document.getElementById("imageCount")?.value) || 0;
 
-            if (!date || !seller || !company || !tdsValue || !contact || !phone || imageCount <= 0) {
+            if (!date || !technician || !company || !tdsValue || !contact || !phone || imageCount <= 0) {
                 alert("Por favor, completa todos los campos requeridos.");
                 submitButton.disabled = false;
                 return;
@@ -479,7 +558,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             await saveImageData({
                 date,
-                seller,
+                technician,
                 company,
                 tdsValue,
                 contact,
@@ -525,7 +604,7 @@ function clearForm() {
         form.reset(); // Resetea todos los campos del formulario
 
         // Limpieza de campos específicos
-        document.getElementById("seller").value = '';
+        document.getElementById("technician").value = '';
         document.getElementById("company").value = '';
         document.getElementById("tds").value = '';
         document.getElementById("contact").value = '';
@@ -541,113 +620,138 @@ function clearForm() {
     locationButton.textContent = "Guardar Ubicación";
 }
 
+document.addEventListener("DOMContentLoaded", () => {
+    loadSalesData();
+});
 
 function loadSalesData() {
-    const salesTableBody = document.querySelector('#salesTable tbody');
-    if (!salesTableBody) {
-        console.error('No se encontró el contenedor de la tabla.');
-        return; // Detener la ejecución si no se encuentra el contenedor
-    }
-
-    const salesRef = ref(db, 'sales_installations');
-    get(salesRef).then((snapshot) => {
-        if (snapshot.exists()) {
-            const salesData = snapshot.val();
-
-            // Limpiar la tabla antes de agregar los nuevos registros
-            salesTableBody.innerHTML = '';
-
-            // Iterar sobre los datos y agregar filas a la tabla
-            Object.entries(salesData).forEach(([id, sale]) => {
-                const row = document.createElement('tr');
-
-                row.innerHTML = `
-                    <td>${sale.date}</td>
-                    <td>${sale.seller}</td>
-                    <td>${sale.company}</td>
-                    <td><button data-uid="${id}">Ver</button></td>
-                `;
-
-                salesTableBody.appendChild(row);
-            });
-        } else {
-            console.log("No hay datos disponibles.");
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            window.location.href = "login.html"; // Redirigir al login si no está autenticado
+            return;
         }
-    }).catch((error) => {
-        console.error("Error al cargar los datos:", error);
+
+        try {
+            // Obtener datos del usuario autenticado
+            const userRef = ref(db, `usuarios/${user.uid}`);
+            const snapshot = await get(userRef);
+
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                const userRole = userData.role;
+                const userTechnician = userData.technician;
+
+                const salesRef = ref(db, "sales_installations");
+                onValue(salesRef, (snapshot) => {
+                    const salesTableBody = document.querySelector("#salesTable tbody");
+                    salesTableBody.innerHTML = ""; // Limpiar la tabla
+
+                    if (snapshot.exists()) {
+                        snapshot.forEach((child) => {
+                            const sale = child.val();
+                            const id = child.key;
+
+                            // Mostrar registros según el rol y técnico
+                            if (userRole === "Administrador" || sale.technician === userTechnician) {
+                                const row = `
+                                    <tr>
+                                        <td>${sale.date || "N/A"}</td>
+                                        <td>${sale.seller || "N/A"}</td>
+                                        <td>${sale.company || "N/A"}</td>
+                                        <td><button class="view-details" data-uid="${id}">Ver</button></td>
+                                    </tr>
+                                `;
+                                salesTableBody.innerHTML += row;
+                            }
+                        });
+
+                        // Agregar eventos a los botones "Ver"
+                        document.querySelectorAll(".view-details").forEach((button) => {
+                            button.addEventListener("click", (e) => {
+                                const saleId = e.target.getAttribute("data-uid");
+                                window.location.href = `details.html?id=${saleId}`;
+                            });
+                        });
+                    } else {
+                        salesTableBody.innerHTML = "<tr><td colspan='4'>No hay registros disponibles.</td></tr>";
+                    }
+                });
+            } else {
+                console.error("No se encontró información del usuario en la base de datos.");
+                window.location.href = "login.html";
+            }
+        } catch (error) {
+            console.error("Error al cargar los datos:", error);
+            window.location.href = "login.html";
+        }
     });
 }
-
-document.querySelector("#salesTable tbody").addEventListener("click", function (e) {
-    const row = e.target.closest('tr');
-
-    // Si hacemos clic en el botón "Ver"
-    if (e.target && e.target.tagName === 'BUTTON' && e.target.textContent === 'Ver') {
-        const uid = e.target.dataset.uid; // Obtener el UID del dataset
-        if (uid) {
-            // Redirigir a la página de detalles con el UID en la URL
-            window.location.href = `detalles.html?uid=${encodeURIComponent(uid)}`;
-        }
-    }
-});
-
-
-// Función para normalizar cadenas (eliminar acentos y convertir a minúsculas)
-function normalizeString(str) {
-    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-}
-
-// Filtro de búsqueda
-document.getElementById("searchBtn")?.addEventListener("click", filterSales);
-
-// Función para aplicar los filtros cuando se haga clic en "Buscar"
+//Filtro de búsqueda ajustado
 function filterSales() {
-    const dateFilter = document.getElementById("searchDate")?.value || "";
-    const sellerFilter = normalizeString(document.getElementById("searchseller")?.value || "");
-    const companyFilter = normalizeString(document.getElementById("searchCompany")?.value || "");
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            window.location.href = "login.html"; // Redirigir al login si no está autenticado
+            return;
+        }
 
-    const queryRef = ref(db, "sales_installations");
-    onValue(queryRef, (snapshot) => {
-        const tableBody = document.querySelector("#salesTable tbody");
-        tableBody.innerHTML = ""; // Limpiar tabla
+        const userRef = ref(db, `usuarios/${user.id}`);
+        const snapshot = await get(userRef);
 
         if (snapshot.exists()) {
-            let rows = "";
-            snapshot.forEach((child) => {
-                const sale = child.val();
-                const id = child.key; // Obtener el UID del registro
+            const userData = snapshot.val();
+            const userRole = userData.role;
+            const userTechnician = userData.technician;
 
-                // Aplicar filtros
-                const matchesDate = dateFilter ? sale.date === dateFilter : true;
-                const matchesSeller = sellerFilter ? normalizeString(sale.seller || "").includes(sellerFilter) : true;
-                const matchesCompany = companyFilter ? normalizeString(sale.company || "").includes(companyFilter) : true;
+            const dateFilter = document.getElementById("searchDate")?.value || "";
+            const technicianFilter = normalizeString(document.getElementById("searchTechnician")?.value || "");
+            const companyFilter = normalizeString(document.getElementById("searchCompany")?.value || "");
 
-                if (matchesDate && matchesSeller && matchesCompany) {
-                    rows += `
-                        <tr>
-                            <td>${sale.date || "N/A"}</td>
-                            <td>${sale.seller || "N/A"}</td>
-                            <td>${sale.company || "N/A"}</td>
-                            <td><button data-uid="${id}">Ver</button></td>
-                        </tr>
-                    `;
+            const queryRef = ref(db, "sales_installations");
+            onValue(queryRef, (snapshot) => {
+                const tableBody = document.querySelector("#salesTable tbody");
+                tableBody.innerHTML = ""; // Limpiar tabla
+
+                if (snapshot.exists()) {
+                    let rows = "";
+                    snapshot.forEach((child) => {
+                        const sale = child.val();
+                        const id = child.key;
+
+                        // Aplicar filtros y validar técnico/administrador
+                        const matchesDate = dateFilter ? sale.date === dateFilter : true;
+                        const matchesTechnician = technicianFilter ? normalizeString(sale.technician || "").includes(technicianFilter) : true;
+                        const matchesCompany = companyFilter ? normalizeString(sale.company || "").includes(companyFilter) : true;
+                        const matchesRole = userRole === "Administrador" || sale.technician === userTechnician;
+
+                        if (matchesDate && matchesTechnician && matchesCompany && matchesRole) {
+                            rows += `
+                                <tr>
+                                    <td>${sale.date || "N/A"}</td>
+                                    <td>${sale.technician || "N/A"}</td>
+                                    <td>${sale.company || "N/A"}</td>
+                                    <td><button data-uid="${id}">Ver</button></td>
+                                </tr>
+                            `;
+                        }
+                    });
+
+                    tableBody.innerHTML = rows || "<tr><td colspan='4'>No se encontraron registros con los filtros aplicados.</td></tr>";
+                } else {
+                    tableBody.innerHTML = "<tr><td colspan='4'>No hay registros disponibles.</td></tr>";
                 }
             });
-
-            tableBody.innerHTML = rows || "<tr><td colspan='4'>No se encontraron registros con los filtros aplicados.</td></tr>";
         } else {
-            tableBody.innerHTML = "<tr><td colspan='4'>No hay registros disponibles.</td></tr>";
+            console.error("No se encontró información del usuario.");
+            window.location.href = "login.html";
         }
     });
+} 
+
+
+// Normalizar cadenas para hacer comparaciones insensibles a mayúsculas/minúsculas
+function normalizeString(str) {
+    return str.trim().toLowerCase();
 }
 
-
-// Limpiar filtros
-document.getElementById("clearFilter")?.addEventListener("click", () => {
-    document.getElementById("searchDate").value = "";
-    document.getElementById("searchseller").value = "";
-    document.getElementById("searchCompany").value = "";
-
-    loadSalesData(); // Recargar todos los registros sin filtros
-});
-
+// Exportar funciones
+export { loadSalesData, filterSales };

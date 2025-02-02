@@ -11,7 +11,7 @@ body {
 }
 
 header {
-  background-color: #004080;
+  background-color: #3498db;
   color: white;
   text-align: center;
   padding: 1rem;
@@ -37,23 +37,27 @@ h2 {
   color: #004080;
 }
 
+
 /* Formulario */
 form {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background-color: white;
+  padding: 10px; /* Reducir padding */
+  margin: 0 auto;
+  width: 95%; /* Más ancho para aprovechar el espacio */
+  max-width: 600px; /* Reducir max-width para hacerlos más compactos */
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
 
 form label {
+  
+  margin-bottom: 10%;
   font-weight: bold;
   margin-bottom: 0.3rem;
 }
 
 form input, form select, form button {
+  margin-bottom: 20px;
   padding: 0.8rem;
   font-size: 1rem;
   border: 1px solid #ccc;
@@ -74,6 +78,50 @@ form button:hover {
   background-color: #003060;
 }
 
+/* Separar botones */
+#submitBtn {
+  background-color: #218838;
+  color: white;
+}
+
+#submitBtn:hover {
+  background-color: #218838; /* Verde más oscuro */
+}
+
+#submitBtn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-right: 10px;
+
+}
+
+.button:hover {
+  background-color: #0056b3;
+  
+}
+
+.label {
+  font-style: italic; /* Aplica estilo cursivo */
+  font-size: 0.7em;
+  
+}
+
+
+.message {
+  color: red;
+  font-style: italic;
+  margin-top: 5px;
+}
+
 /* Filtros */
 #filters-section input, #filters-section select, #filters-section button {
   margin-bottom: 0.8rem;
@@ -91,6 +139,18 @@ form button:hover {
   background-color: #e65a50;
 }
 
+#logoutButton {
+  display: none;
+  color: #f44336; /* Color rojo */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#logoutButton:hover {
+  color: #ff2222; /* Color cuando el mouse pasa sobre el botón */
+  transform: scale(1.1); /* Aumenta ligeramente el tamaño */
+  cursor: pointer; /* Cambia el cursor para indicar que es clickeable */
+}
 /* Tabla */
 table {
   width: 100%;

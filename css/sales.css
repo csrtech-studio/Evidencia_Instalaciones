@@ -14,10 +14,48 @@ body {
     padding: 20px;
 }
 
+header {
+  background-color: #3498db;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
 h1, h2 {
     text-align: center;
     color: #2c3e50;
     margin-bottom: 20px;
+}
+/* Main content */
+main {
+  padding: 1rem;
+}
+
+section {
+  margin-bottom: 2rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  color: #004080;
+}
+
+#logoutButton {
+  display: none;
+  color: #f44336; /* Color rojo */
+  text-decoration: none;
+  font-weight: bold;
+}
+
+#logoutButton:hover {
+  color: #ff2222; /* Color cuando el mouse pasa sobre el botón */
+  transform: scale(1.1); /* Aumenta ligeramente el tamaño */
+  cursor: pointer; /* Cambia el cursor para indicar que es clickeable */
 }
 /* Formulario */
 form {
