@@ -2,11 +2,17 @@ const CACHE_NAME = "v1-cache-pwa";
 const urlsToCache = [
     "/Evidencia_Instalaciones/",
     "/Evidencia_Instalaciones/index.html",
+    "/Evidencia_Instalaciones/login.html",
+    "/Evidencia_Instalaciones/vendedores.html",
+    "/Evidencia_Instalaciones/tecnicos.html",
     "/Evidencia_Instalaciones/service-worker.js",
     "/Evidencia_Instalaciones/manifest.json",
     "/Evidencia_Instalaciones/css/style.css",
     "/Evidencia_Instalaciones/js/firebaseConfig.js",
     "/Evidencia_Instalaciones/js/main.js",
+    "/Evidencia_Instalaciones/js/agregarUsuario.js",
+    "/Evidencia_Instalaciones/js/detalles.js",
+    "/Evidencia_Instalaciones/js/login.js",
     "/Evidencia_Instalaciones/js/sw-register.js",
     "/Evidencia_Instalaciones/js/installPrompt.js",
     "/Evidencia_Instalaciones/js/video.js", 
@@ -17,37 +23,15 @@ const urlsToCache = [
 
 // Instalar el Service Worker
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log("Archivos en caché correctamente");
-      return cache.addAll(urlsToCache);
-    }).catch((error) => {
-      console.error("Error al agregar archivos al caché:", error);
-    })
-  );
+  console.log("Service Worker instalado");
+  event.waitUntil(self.skipWaiting());
 });
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/Evidencia_Instalaciones/service-worker.js')
-      .then((registration) => {
-        console.log('Service Worker registrado con éxito:', registration);
-      })
-      .catch((error) => {
-        console.log('Error al registrar el Service Worker:', error);
-      });
-  });
-}
 
-// Activar el Service Worker
 self.addEventListener("activate", (event) => {
   console.log("Service Worker activado");
+  event.waitUntil(self.clients.claim());
 });
 
-// Interceptar las solicitudes
 self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
+  console.log("Interceptando:", event.request.url);
 });

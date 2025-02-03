@@ -33,8 +33,7 @@ export function logout() {
 export function checkAuthStateAndRole(requiredRole) {
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
-            console.log("Usuario no autenticado. Redirigiendo al login.");
-            window.location.href = "login.html"; // Redirigir al login si no está autenticado
+            redirectToLogin("Usuario no autenticado. Redirigiendo al login.");
             return;
         }
 
@@ -46,7 +45,7 @@ export function checkAuthStateAndRole(requiredRole) {
 
             if (!snapshot.exists()) {
                 alert("Tu cuenta no tiene datos registrados. Contacta al administrador.");
-                window.location.href = "login.html";
+                redirectToLogin();
                 return;
             }
 
@@ -57,17 +56,29 @@ export function checkAuthStateAndRole(requiredRole) {
             console.log("Rol del usuario:", userRole);
             console.log("Rol requerido para esta página:", requiredRole);
 
-            if (userRole !== requiredRole && userRole !== "Administrador") {
-                showAccessDenied(userRole); // Mostrar mensaje de acceso denegado
+            // Si el rol no coincide, se muestra el acceso denegado
+            if (!hasAccess(userRole, requiredRole)) {
+                showAccessDenied(userRole);
                 return;
             }
+
         } catch (error) {
             console.error("Error al obtener los datos del usuario:", error);
-            window.location.href = "login.html";
+            redirectToLogin();
         }
     });
 }
 
+// Verificar si el usuario tiene el rol requerido
+function hasAccess(userRole, requiredRole) {
+    return userRole === requiredRole || userRole === "Administrador";
+}
+
+// Redirigir al login y mostrar mensaje si no está autenticado
+function redirectToLogin(message = "Acceso denegado. Redirigiendo al login.") {
+    alert(message);
+    window.location.href = "login.html";
+}
 
 // Mostrar mensaje de acceso denegado y botón para regresar
 function showAccessDenied(role) {
@@ -78,12 +89,13 @@ function showAccessDenied(role) {
     };
 
     document.body.innerHTML = `
-        <div style="text-align: center; margin-top: 20%;">
+        <div style="text-align: center; margin-top: 20%; padding: 20px;">
             <h1>No tienes permiso para acceder a esta página</h1>
             <button id="goBack" style="padding: 10px 20px; font-size: 16px; cursor: pointer;">Regresar</button>
         </div>
     `;
 
+    // Redirigir según el rol o a la página principal
     document.getElementById("goBack").addEventListener("click", () => {
         window.location.href = rolePages[role] || "index.html";
     });

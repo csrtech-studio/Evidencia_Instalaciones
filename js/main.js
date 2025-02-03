@@ -290,6 +290,35 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         uploadContainer.style.display = 'none';
     }
 });
+// Función para cargar datos en la tabla
+function loadInstallations(queryRef = ref(db, "installations")) {
+    const tableBody = document.querySelector("#installationsTable tbody");
+    tableBody.innerHTML = ""; 
+
+    onValue(queryRef, (snapshot) => {
+        if (snapshot.exists()) {
+            let rows = "";
+            snapshot.forEach((child) => {
+                const data = child.val();
+                rows += ` 
+                    <tr>
+                        <td>${data.date}</td>
+                        <td>${data.technician}</td>
+                        <td>${data.company}</td>
+                        <td>${data.installationType}</td>
+                        <td>${data.installationCategory}</td>
+                        <td><a href="${data.installationVideo}" target="_blank">Instalacion</a></td>
+                        <td><a href="${data.tdsVideo}" target="_blank">Tds</a></td>
+                    </tr>
+                `;
+            });
+            tableBody.innerHTML = rows;
+        } else {
+            tableBody.innerHTML = "<tr><td colspan='7'>No hay registros disponibles.</td></tr>";
+        }
+    });
+}
+
 
 
 // Limpiar formulario

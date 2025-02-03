@@ -5,6 +5,14 @@ import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.16.0
 const auth = getAuth();
 const db = getDatabase();
 
+// Objeto para manejar las redirecciones según el rol
+const roleRedirects = {
+    "Instalador": "index.html",
+    "Tecnico": "tecnicos.html",
+    "Vendedor": "vendedores.html",
+    "Administrador": "admin.html"
+};
+
 document.getElementById("loginBtn").addEventListener("click", async () => {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value.trim();
@@ -16,6 +24,12 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
     // Validar campos vacíos
     if (!email || !password) {
         errorMessage.textContent = "Por favor, ingrese su correo electrónico y contraseña.";
+        return;
+    }
+
+    // Validar formato de correo electrónico
+    if (!validateEmail(email)) {
+        errorMessage.textContent = "Por favor, ingrese un correo electrónico válido.";
         return;
     }
 
@@ -41,42 +55,42 @@ document.getElementById("loginBtn").addEventListener("click", async () => {
             }));
 
             // Redirigir según el rol
-            switch (role) {
-                case "Instalador":
-                    window.location.href = "index.html";
-                    break;
-                case "Tecnico":
-                    window.location.href = "tecnicos.html";
-                    break;
-                case "Vendedor":
-                    window.location.href = "vendedores.html";
-                    break;
-                case "Administrador":
-                    window.location.href = "admin.html";
-                    break;
-                default:
-                    errorMessage.textContent = "Rol desconocido. Por favor, contacte al administrador.";
+            if (roleRedirects[role]) {
+                window.location.href = roleRedirects[role];
+            } else {
+                errorMessage.textContent = "Rol desconocido. Por favor, contacte al administrador.";
             }
         } else {
             errorMessage.textContent = "No se encontró información del usuario en la base de datos. Por favor, contacte al administrador.";
         }
     } catch (error) {
         // Mostrar errores específicos
-        switch (error.code) {
-            case "auth/invalid-email":
-                errorMessage.textContent = "El formato del correo electrónico no es válido. Por favor, verifíquelo.";
-                break;
-            case "auth/user-not-found":
-                errorMessage.textContent = "Usuario no registrado. Por favor, verifique sus datos o regístrese.";
-                break;
-            case "auth/wrong-password":
-                errorMessage.textContent = "Contraseña incorrecta. Por favor, inténtelo de nuevo.";
-                break;
-            case "auth/too-many-requests":
-                errorMessage.textContent = "Demasiados intentos fallidos. Por favor, intente nuevamente más tarde.";
-                break;
-            default:
-                errorMessage.textContent = "Ocurrió un error inesperado. Por favor, intente nuevamente.";
-        }
+        handleError(error, errorMessage);
     }
 });
+
+// Validar formato de correo electrónico
+function validateEmail(email) {
+    const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    return emailPattern.test(email);
+}
+
+// Manejar errores de autenticación
+function handleError(error, errorMessage) {
+    switch (error.code) {
+        case "auth/invalid-email":
+            errorMessage.textContent = "El formato del correo electrónico no es válido. Por favor, verifíquelo.";
+            break;
+        case "auth/user-not-found":
+            errorMessage.textContent = "Usuario no registrado. Por favor, verifique sus datos o regístrese.";
+            break;
+        case "auth/wrong-password":
+            errorMessage.textContent = "Contraseña incorrecta. Por favor, inténtelo de nuevo.";
+            break;
+        case "auth/too-many-requests":
+            errorMessage.textContent = "Demasiados intentos fallidos. Por favor, intente nuevamente más tarde.";
+            break;
+        default:
+            errorMessage.textContent = "Ocurrió un error inesperado. Por favor, intente nuevamente.";
+    }
+}
