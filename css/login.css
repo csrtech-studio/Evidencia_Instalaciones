@@ -1,106 +1,102 @@
-/* Estilo global */
+/* Estilos generales */
 body {
-    font-family: 'Arial', sans-serif;
-    margin: 0;
-    padding: 0;
-    background: linear-gradient(to bottom, #1d3557, #457b9d);
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    color: #f1faee;
+    margin: 0;
 }
 
-/* Contenedor del formulario */
-#loginForm {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 20px 30px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-    width: 100%;
-    max-width: 400px;
-    box-sizing: border-box;
+/* Contenedor principal */
+.login-container {
     display: flex;
-    flex-direction: column;
-    gap: 20px;
-    color: #1d3557;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
 }
 
-/* Encabezado */
-h1 {
-    font-size: 24px;
-    font-weight: bold;
+/* Caja del formulario */
+.login-box {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 350px;
     text-align: center;
+}
+
+/* Logo */
+.logo {
+    width: 80px;
+    margin-bottom: 15px;
+}
+
+/* Título */
+h1 {
+    color: #333;
+    font-size: 22px;
     margin-bottom: 20px;
-    color: #f1faee;
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Grupos de inputs */
+.input-group {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+/* Labels */
+label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
 }
 
 /* Inputs */
-label {
-    font-size: 14px;
-    margin-bottom: 5px;
-    color: #457b9d;
-}
-
-input[type="email"], 
-input[type="password"] {
+input {
     width: 100%;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 6px;
+    padding: 10px;
     border: 1px solid #ccc;
-    box-shadow: inset 0px 2px 4px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
-    transition: border-color 0.3s;
-}
-
-input[type="email"]:focus, 
-input[type="password"]:focus {
-    border-color: #1d3557;
-    outline: none;
+    border-radius: 5px;
+    font-size: 16px;
 }
 
 /* Botón */
 button {
-    background: #1d3557;
-    color: #f1faee;
-    padding: 12px;
-    font-size: 16px;
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: #fff;
     border: none;
-    border-radius: 6px;
+    border-radius: 5px;
+    font-size: 16px;
     cursor: pointer;
     transition: background 0.3s ease;
+    margin-top: 10px;
 }
 
 button:hover {
-    background: #457b9d;
+    background: #0056b3;
 }
 
-button:active {
-    background: #1d3557;
+/* Enlace de recuperación de contraseña */
+.forgot-password {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
 }
 
 /* Mensaje de error */
 #errorMessage {
-    color: #e63946;
+    color: red;
+    margin-top: 10px;
     font-size: 14px;
-    text-align: center;
-    margin-top: -10px;
-}
-
-/* Efectos adicionales */
-#loginForm {
-    animation: fadeIn 0.8s ease-in-out;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }

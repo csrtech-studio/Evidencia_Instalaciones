@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Administración</title>
-    <link rel="stylesheet" href="styles.css">
-    <script type="module" src="auth.js"></script>
+    <link rel="stylesheet" href="css/admin.css">
+    <script type="module" src="js/auth.js"></script>
 </head>
 
 <body>
@@ -16,18 +16,19 @@
 
     <main>
         <div class="container">
+            <h2>Gestión de Usuarios</h2>
             <div class="button-group">
-                <button class="admin-btn" onclick="window.location.href='tecnicos.html'">Técnicos</button>
-                <button class="admin-btn" onclick="window.location.href='index.html'">Instaladores</button>
-                <button class="admin-btn" onclick="window.location.href='vendedores.html'">Vendedores</button>
-                <button class="admin-btn" onclick="window.location.href='agregar-usuario.html'">Agregar Usuario</button>
-                <button class="admin-btn" onclick="logout()">Cerrar Sesión</button>
+                <button class="admin-btn" onclick="window.location.href='tecnicos.html'">👨‍🔧 Técnicos</button>
+                <button class="admin-btn" onclick="window.location.href='index.html'">🏗️ Instaladores</button>
+                <button class="admin-btn" onclick="window.location.href='vendedores.html'">🛒 Vendedores</button>
+                <button class="admin-btn" onclick="window.location.href='agregar-usuario.html'">➕ Agregar Usuario</button>
+                <button class="admin-btn logout" onclick="logout()">🚪 Cerrar Sesión</button>
             </div>
         </div>
     </main>
 
     <footer>
-        <p>&copy; 2025 Administración</p>
+        <p>&copy; 2025 Administración | Todos los derechos reservados</p>
     </footer>
 
 </body>
