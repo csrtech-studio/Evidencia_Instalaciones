@@ -192,121 +192,118 @@ document.addEventListener("DOMContentLoaded", function () {
     loadSalesData();  // Cargar los datos después de que el DOM esté listo
 });
 
-// Detectar cambios en la cantidad de imágenes y generar campos dinámicos
-document.getElementById("imageCount").addEventListener("input", function () {
-    const imageCount = parseInt(this.value) || 0;
+document.addEventListener("DOMContentLoaded", function () {
     const imagesContainer = document.getElementById("imagesContainer");
+    const addEquipmentButton = document.getElementById("addEquipment");
+    let equipmentCount = 0;
 
-    // Limpiar contenedor de imágenes
-    imagesContainer.innerHTML = "";
+    function addEquipment() {
+        equipmentCount++;
 
-    for (let i = 1; i <= imageCount; i++) {
         const imageWrapper = document.createElement("div");
         imageWrapper.classList.add("image-wrapper");
+        imageWrapper.setAttribute("id", `equipment-${equipmentCount}`);
 
         // Campo de Área
         const labelArea = document.createElement("label");
-        labelArea.setAttribute("for", `areaImage${i}`);
-        labelArea.textContent = `Área ${i}:`;
+        labelArea.setAttribute("for", `areaImage${equipmentCount}`);
+        labelArea.textContent = `Área ${equipmentCount}:`;
 
         const inputArea = document.createElement("input");
         inputArea.type = "text";
-        inputArea.id = `areaImage${i}`;
-        inputArea.name = `areaImage${i}`;
-        inputArea.placeholder = `Ingrese área ${i}`;
+        inputArea.id = `areaImage${equipmentCount}`;
+        inputArea.name = `areaImage${equipmentCount}`;
+        inputArea.placeholder = `Ingrese área ${equipmentCount}`;
         inputArea.required = true;
 
         const labelAreaFile = document.createElement("label");
         labelAreaFile.textContent = "Tomar Foto (Área)";
         labelAreaFile.classList.add("custom-file-button");
-        labelAreaFile.setAttribute("for", `areaFile${i}`);
+        labelAreaFile.setAttribute("for", `areaFile${equipmentCount}`);
 
         const inputAreaFile = document.createElement("input");
         inputAreaFile.type = "file";
         inputAreaFile.accept = "image/*";
         inputAreaFile.capture = "environment";
-        inputAreaFile.id = `areaFile${i}`;
-        inputAreaFile.name = `areaFile${i}`;
+        inputAreaFile.id = `areaFile${equipmentCount}`;
+        inputAreaFile.name = `areaFile${equipmentCount}`;
         inputAreaFile.style.display = "none";
 
         const areaFileName = document.createElement("span");
-        areaFileName.id = `areaFileName${i}`;
+        areaFileName.id = `areaFileName${equipmentCount}`;
         areaFileName.classList.add("file-name");
         areaFileName.textContent = "No se ha cargado ninguna foto.";
 
         inputAreaFile.addEventListener("change", function () {
-            const fileName = this.files[0]?.name || "No se ha seleccionado ninguna foto.";
-            areaFileName.textContent = `Foto cargada: Area ${i}`;
+            areaFileName.textContent = `Foto cargada: Área ${equipmentCount}`;
         });
 
         // Campo de Tomas de Agua
         const labelWaterLocation = document.createElement("label");
-        labelWaterLocation.setAttribute("for", `waterLocationImage${i}`);
+        labelWaterLocation.setAttribute("for", `waterLocationImage${equipmentCount}`);
         labelWaterLocation.textContent = `Tomas de agua:`;
 
         const inputWaterLocation = document.createElement("input");
         inputWaterLocation.type = "text";
-        inputWaterLocation.id = `waterLocationImage${i}`;
-        inputWaterLocation.name = `waterLocationImage${i}`;
-        inputWaterLocation.placeholder = `Ingrese ubicación para la toma de agua ${i}`;
+        inputWaterLocation.id = `waterLocationImage${equipmentCount}`;
+        inputWaterLocation.name = `waterLocationImage${equipmentCount}`;
+        inputWaterLocation.placeholder = `Ingrese ubicación para la toma de agua ${equipmentCount}`;
         inputWaterLocation.required = true;
 
         const labelWaterFile = document.createElement("label");
         labelWaterFile.textContent = "Tomar Foto (Tomas de agua)";
         labelWaterFile.classList.add("custom-file-button");
-        labelWaterFile.setAttribute("for", `waterFile${i}`);
+        labelWaterFile.setAttribute("for", `waterFile${equipmentCount}`);
 
         const inputWaterFile = document.createElement("input");
         inputWaterFile.type = "file";
         inputWaterFile.accept = "image/*";
         inputWaterFile.capture = "environment";
-        inputWaterFile.id = `waterFile${i}`;
-        inputWaterFile.name = `waterFile${i}`;
+        inputWaterFile.id = `waterFile${equipmentCount}`;
+        inputWaterFile.name = `waterFile${equipmentCount}`;
         inputWaterFile.style.display = "none";
 
         const waterFileName = document.createElement("span");
-        waterFileName.id = `waterFileName${i}`;
+        waterFileName.id = `waterFileName${equipmentCount}`;
         waterFileName.classList.add("file-name");
         waterFileName.textContent = "No se ha cargado ninguna foto.";
 
         inputWaterFile.addEventListener("change", function () {
-            const fileName = this.files[0]?.name || "No se ha seleccionado ninguna foto.";
-            waterFileName.textContent = `Foto cargada: Tomas de Agua ${i}`;
+            waterFileName.textContent = `Foto cargada: Tomas de Agua ${equipmentCount}`;
         });
 
         // Campo de Drenaje
         const labelDrainage = document.createElement("label");
-        labelDrainage.setAttribute("for", `drainImage${i}`);
+        labelDrainage.setAttribute("for", `drainImage${equipmentCount}`);
         labelDrainage.textContent = `Drenaje:`;
 
         const inputDrainage = document.createElement("input");
         inputDrainage.type = "text";
-        inputDrainage.id = `drainImage${i}`;
-        inputDrainage.name = `drainImage${i}`;
-        inputDrainage.placeholder = `Ingrese drenaje ${i}`;
+        inputDrainage.id = `drainImage${equipmentCount}`;
+        inputDrainage.name = `drainImage${equipmentCount}`;
+        inputDrainage.placeholder = `Ingrese drenaje ${equipmentCount}`;
         inputDrainage.required = true;
 
         const labelDrainFile = document.createElement("label");
         labelDrainFile.textContent = "Tomar Foto (Drenaje)";
         labelDrainFile.classList.add("custom-file-button");
-        labelDrainFile.setAttribute("for", `drainFile${i}`);
+        labelDrainFile.setAttribute("for", `drainFile${equipmentCount}`);
 
         const inputDrainFile = document.createElement("input");
         inputDrainFile.type = "file";
         inputDrainFile.accept = "image/*";
         inputDrainFile.capture = "environment";
-        inputDrainFile.id = `drainFile${i}`;
-        inputDrainFile.name = `drainFile${i}`;
+        inputDrainFile.id = `drainFile${equipmentCount}`;
+        inputDrainFile.name = `drainFile${equipmentCount}`;
         inputDrainFile.style.display = "none";
 
         const drainFileName = document.createElement("span");
-        drainFileName.id = `drainFileName${i}`;
+        drainFileName.id = `drainFileName${equipmentCount}`;
         drainFileName.classList.add("file-name");
         drainFileName.textContent = "No se ha cargado ninguna foto.";
 
         inputDrainFile.addEventListener("change", function () {
-            const fileName = this.files[0]?.name || "No se ha seleccionado ninguna foto.";
-            drainFileName.textContent = `Foto cargada: Drenaje ${i}`;
+            drainFileName.textContent = `Foto cargada: Drenaje ${equipmentCount}`;
         });
 
         // Agregar elementos al wrapper
@@ -328,9 +325,40 @@ document.getElementById("imageCount").addEventListener("input", function () {
         imageWrapper.appendChild(inputDrainFile);
         imageWrapper.appendChild(drainFileName);
 
+        // Botón de eliminar (si hay más de un equipo)
+        if (equipmentCount > 1) {
+            const deleteButton = document.createElement("button");
+            deleteButton.textContent = "❌ Eliminar";
+            deleteButton.classList.add("delete-equipment");
+            deleteButton.style.backgroundColor = "red";
+            deleteButton.style.color = "white";
+            deleteButton.style.border = "none";
+            deleteButton.style.padding = "8px";
+            deleteButton.style.cursor = "pointer";
+            deleteButton.style.marginTop = "10px";
+            deleteButton.style.display = "block";
+            deleteButton.style.width = "100%";
+
+            deleteButton.addEventListener("click", function () {
+                if (confirm("¿Seguro que quieres eliminar este equipo?")) {
+                    imagesContainer.removeChild(imageWrapper);
+                }
+            });
+
+            imageWrapper.appendChild(deleteButton);
+        }
+
+        // Agregar el bloque al contenedor
         imagesContainer.appendChild(imageWrapper);
     }
+
+    // Agregar el primer equipo por defecto
+    addEquipment();
+
+    // Agregar nuevo equipo al hacer clic en el botón
+    addEquipmentButton.addEventListener("click", addEquipment);
 });
+
 
 
 // Foto del Tds//

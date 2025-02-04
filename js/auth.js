@@ -33,7 +33,7 @@ export function logout() {
 export function checkAuthStateAndRole(requiredRole) {
     onAuthStateChanged(auth, async (user) => {
         if (!user) {
-            redirectToLogin("Usuario no autenticado. Redirigiendo al login.");
+            redirectToLogin("Cerrando sesión. Redirigiendo al login.");
             return;
         }
 
