@@ -626,10 +626,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function loadSalesData() {
     onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            window.location.href = "login.html"; // Redirigir al login si no está autenticado
-            return;
-        }
 
         try {
             // Obtener datos del usuario autenticado
@@ -678,22 +674,15 @@ function loadSalesData() {
                 });
             } else {
                 console.error("No se encontró información del usuario en la base de datos.");
-                window.location.href = "login.html";
             }
         } catch (error) {
             console.error("Error al cargar los datos:", error);
-            window.location.href = "login.html";
         }
     });
 }
 //Filtro de búsqueda ajustado
 function filterSales() {
     onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            window.location.href = "login.html"; // Redirigir al login si no está autenticado
-            return;
-        }
-
         const userRef = ref(db, `usuarios/${user.id}`);
         const snapshot = await get(userRef);
 
@@ -742,7 +731,6 @@ function filterSales() {
             });
         } else {
             console.error("No se encontró información del usuario.");
-            window.location.href = "login.html";
         }
     });
 } 

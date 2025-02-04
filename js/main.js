@@ -6,7 +6,7 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { checkAuthState, logout } from "./auth.js";
 import { checkAuthStateAndRole } from "./auth.js";
 
-checkAuthStateAndRole("Instalador");
+checkAuthStateAndRole("Instalador","Administrador");
 
 // Inicializar Firebase
 const app = initializeApp(firebaseConfig);
@@ -290,6 +290,7 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         uploadContainer.style.display = 'none';
     }
 });
+
 // Función para cargar datos en la tabla
 function loadInstallations(queryRef = ref(db, "installations")) {
     const tableBody = document.querySelector("#installationsTable tbody");
@@ -318,8 +319,6 @@ function loadInstallations(queryRef = ref(db, "installations")) {
         }
     });
 }
-
-
 
 // Limpiar formulario
 function clearForm() {

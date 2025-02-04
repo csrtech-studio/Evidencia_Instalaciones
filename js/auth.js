@@ -97,6 +97,6 @@ function showAccessDenied(role) {
 
     // Redirigir según el rol o a la página principal
     document.getElementById("goBack").addEventListener("click", () => {
-        window.location.href = rolePages[role] || "index.html";
+        window.location.href = rolePages[role] || "login.html";
     });
 }
