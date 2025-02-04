@@ -11,8 +11,7 @@ const db = getDatabase(app);
 
 // Verificar autenticación y rol antes de mostrar la página
 checkAuthStateAndRole("Administrador");
-
-// Evento para agregar usuario
+let isRegistering = false;
 document.getElementById('addUserForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -33,6 +32,8 @@ document.getElementById('addUserForm').addEventListener('submit', async (e) => {
     }
 
     try {
+        isRegistering = true;  // Establecer que estamos registrando un usuario
+
         // Crear usuario en Firebase Authentication
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
@@ -46,8 +47,12 @@ document.getElementById('addUserForm').addEventListener('submit', async (e) => {
         });
 
         alert('Usuario agregado correctamente.');
-        document.getElementById('addUserForm').reset();
+
+        // Redirigir a admin.html
+        window.location.href = 'admin.html';
     } catch (error) {
         alert('Error al agregar el usuario: ' + error.message);
+    } finally {
+        isRegistering = false;  // Restablecer el estado después de intentar agregar el usuario
     }
 });
