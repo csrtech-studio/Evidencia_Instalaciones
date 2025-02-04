@@ -1,4 +1,4 @@
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword } from "htps://www.gstatic.com/firebasejs/9.16.0/firebase-auth.js";
 import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.16.0/firebase-database.js";
 
 // Inicializa Firebase Auth y Realtime Database
@@ -8,7 +8,7 @@ const db = getDatabase();
 // Objeto para manejar las redirecciones según el rol
 const roleRedirects = {
     "Instalador": "index.html",
-    "Tecnico": "tecnicos.html",
+    "Tecnico": "index.html",
     "Vendedor": "vendedores.html",
     "Administrador": "admin.html"
 };
