@@ -110,17 +110,17 @@ const uploadInstallationVideoBtn = document.getElementById('uploadInstallationVi
 const recordInstallationVideoBtn = document.getElementById('recordInstallationVideo');
 const installationVideoLabel = document.getElementById('installationVideoLabel');
 
-// Botones para Video TDS
-const uploadTdsVideoBtn = document.getElementById('uploadTdsVideo');
-const recordTdsVideoBtn = document.getElementById('recordTdsVideo');
-const tdsVideoLabel = document.getElementById('tdsVideoLabel');
+// Botones para Foto TDS (antes Video TDS)
+const uploadTdsPhotoBtn = document.getElementById('uploadTdsPhoto');
+const recordTdsPhotoBtn = document.getElementById('recordTdsPhoto');
+const tdsPhotoLabel = document.getElementById('tdsPhotoLabel');
 
 // Inicializar etiquetas
 installationVideoLabel.textContent = 'No se ha cargado ningún video';
-tdsVideoLabel.textContent = 'No se ha cargado ningún video';
+tdsPhotoLabel.textContent = 'No se ha cargado ninguna foto';
 
 let installationVideo = null;
-let tdsVideo = null;
+let tdsPhoto = null;
 
 // Crear inputs dinámicamente
 function createFileInput(accept, capture, callback) {
@@ -155,25 +155,25 @@ recordInstallationVideoBtn.addEventListener('click', (event) => {
     });
 });
 
-// Manejar la selección/grabación de video para TDS
-uploadTdsVideoBtn.addEventListener('click', (event) => {
+// Manejar la selección/grabación de foto para TDS
+uploadTdsPhotoBtn.addEventListener('click', (event) => {
     event.preventDefault();
-    createFileInput('video/*', false, (event) => {
+    createFileInput('image/*', false, (event) => {
         const file = event.target.files[0];
         if (file) {
-            tdsVideo = file; // Asignar el archivo a la variable global
-            tdsVideoLabel.textContent = `Video cargado: ${file.name}`;
+            tdsPhoto = file; // Asignar el archivo a la variable global
+            tdsPhotoLabel.textContent = `Foto cargada: ${file.name}`;
         }
     });
 });
 
-recordTdsVideoBtn.addEventListener('click', (event) => {
+recordTdsPhotoBtn.addEventListener('click', (event) => {
     event.preventDefault();
-    createFileInput('video/*', 'camera', (event) => {
+    createFileInput('image/*', 'camera', (event) => {
         const file = event.target.files[0];
         if (file) {
-            tdsVideo = file;
-            tdsVideoLabel.textContent = `Video cargado: ${file.name}`;
+            tdsPhoto = file;
+            tdsPhotoLabel.textContent = `Foto cargada: ${file.name}`;
         }
     });
 });
@@ -212,8 +212,8 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
             return;
         }
 
-        if (!tdsVideo) {
-            alert("Por favor, selecciona un video para 'Video TDS'.");
+        if (!tdsPhoto) {
+            alert("Por favor, selecciona una foto para 'Foto TDS'.");
             submitButton.disabled = false;
             uploadContainer.style.display = 'none';
             return;
@@ -221,14 +221,14 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
 
         // Rutas de almacenamiento
         const installationVideoPath = `videos/installation_${Date.now()}.mp4`;
-        const tdsVideoPath = `videos/tds_${Date.now()}.mp4`;
+        const tdsPhotoPath = `photos/tds_${Date.now()}.jpg`;
 
-        // Subir videos
+        // Subir archivos
         const installationVideoRef = storageRef(storage, installationVideoPath);
-        const tdsVideoRef = storageRef(storage, tdsVideoPath);
+        const tdsPhotoRef = storageRef(storage, tdsPhotoPath);
 
         const uploadTask1 = uploadBytesResumable(installationVideoRef, installationVideo);
-        const uploadTask2 = uploadBytesResumable(tdsVideoRef, tdsVideo);
+        const uploadTask2 = uploadBytesResumable(tdsPhotoRef, tdsPhoto);
 
         // Monitorear progreso
         const showUploadProgress = () => {
@@ -259,13 +259,13 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
         await Promise.all([uploadTask1, uploadTask2]);
 
         // Obtener URLs de descarga
-        let installationVideoURL, tdsVideoURL;
+        let installationVideoURL, tdsPhotoURL;
         try {
             installationVideoURL = await getDownloadURL(installationVideoRef);
-            tdsVideoURL = await getDownloadURL(tdsVideoRef);
+            tdsPhotoURL = await getDownloadURL(tdsPhotoRef);
         } catch (error) {
-            console.error("Error al obtener URLs de videos:", error);
-            alert("Ocurrió un error al procesar los videos.");
+            console.error("Error al obtener URLs:", error);
+            alert("Ocurrió un error al procesar los archivos.");
             return;
         }
 
@@ -277,7 +277,7 @@ document.getElementById("submitBtn").addEventListener("click", async () => {
             installationType,
             installationCategory,
             installationVideo: installationVideoURL,
-            tdsVideo: tdsVideoURL,
+            tdsPhoto: tdsPhotoURL, // clave actualizada para la foto TDS
         };
 
         await push(ref(db, "installations"), newEntry);
@@ -308,8 +308,8 @@ function loadInstallations(queryRef = ref(db, "installations")) {
                         <td>${data.company}</td>
                         <td>${data.installationType}</td>
                         <td>${data.installationCategory}</td>
-                        <td><a href="${data.installationVideo}" target="_blank">Instalacion</a></td>
-                        <td><a href="${data.tdsVideo}" target="_blank">Tds</a></td>
+                        <td><a href="${data.installationVideo}" target="_blank">Instalación</a></td>
+                        <td><a href="${data.tdsPhoto}" target="_blank">Foto TDS</a></td>
                     </tr>
                 `;
             });
@@ -352,7 +352,7 @@ function normalizeString(str) {
 // Filtro de búsqueda con validación para null
 document.getElementById("searchBtn")?.addEventListener("click", filterInstallations);
 
-// Función para aplicar el filtro cuando se haga clic en el botón "Buscar"
+// En la función de filtro también se actualiza el enlace para Foto TDS
 function filterInstallations() {
     const companyFilter = document.getElementById("searchCompany")?.value.toLowerCase() || "";
     const dateFilter = document.getElementById("searchDate")?.value || "";
@@ -386,7 +386,7 @@ function filterInstallations() {
                             <td>${data.installationType}</td>
                             <td>${data.installationCategory}</td>
                             <td><a href="${data.installationVideo}" target="_blank">Ver Video Instalación</a></td>
-                            <td><a href="${data.tdsVideo}" target="_blank">Ver Video TDS</a></td>
+                            <td><a href="${data.tdsPhoto}" target="_blank">Ver Foto TDS</a></td>
                         </tr>
                     `;
                 }
